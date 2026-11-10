@@ -63,3 +63,12 @@ Post-deploy browser verification: latest production alias READY; sample Daily Sa
 - Inventory spreadsheet new tab: Store & Employee Billing. Apps Script TradeBilling.gs installed remotely as Untitled 2.gs alongside unchanged legacy Code.gs and daily operations worker. pfSyncTradeBilling runs every five minutes using the existing scoped connector token.
 - Validation: 40 Node tests pass. Transaction-only database fixture checks stock deduction, retry idempotency, initial payment, stale-stock rejection, manager/employee restrictions, and developer backup; all fixtures roll back.
 - Employee purchases do not deduct payroll automatically. Payroll partial-payment behavior remains available.
+
+## Billing-only follow-up — 2026-11-10
+
+- Employee picker supports custom company employees at other branches without granting app access. Name plus optional branch is saved for reuse.
+- Managers can delete a sale or payment from the billing list and statement totals after entering a reason. Deleting a sale also marks its original upfront payment deleted; separate later payments remain. Inventory is explicitly unchanged by deletion.
+- Original records remain in the backup; the existing Sheet worker appends distinct deletion audit rows with original record IDs and reasons. Separate deletion acknowledgements prevent an older sync response from losing a deletion.
+- Migration: billing-custom-employees-and-delete.sql. Existing billing entries are not deleted by deployment.
+- Validation: 42 Node checks (41 passed in full run; corrected test fixture then all 5 billing checks passed). Transaction-only database checks verify custom-account reuse, associated-payment deletion, retry safety, employee denial, stock preservation, and deletion audit IDs; rolled back after verification.
+- Regenerated deliverables/index.html from current website sources.
