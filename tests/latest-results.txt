@@ -1,0 +1,31 @@
+✔ repair updates preserve newer status, zero/false extras and audit notes (8.775834ms)
+✔ warranty backfill does not overwrite existing zero days (2.109542ms)
+✔ both separate scripts refuse ID rename before any Sheet write (2.626125ms)
+✔ inventory aliases preserve explicit zero values and payment arrays serialize (0.781625ms)
+✔ initial backup retains every field and retries a failed request without blocking original storage (9.166458ms)
+✔ a save during an in-flight request remains queued after the old event is acknowledged (2.186958ms)
+✔ two browser tabs retain independent pending edits and deletion markers (2.545083ms)
+✔ mirror quota failures do not cancel the original Google-sync data write (1.079792ms)
+✔ unrelated auth/dirty state is not mirrored; old outbox survives an upgrade (0.616ms)
+✔ offline work stays queued and batches never exceed the server limit (4.944083ms)
+✔ restricted account backs up permitted edits while retaining blocked pending events for a manager (1.060708ms)
+✔ original workspace boots, zero-permission employee sees no management, intake-only employee has intake access but no delete permission (903.131833ms)
+✔ developer row never offers edit; manager cannot edit owner; intake-only employee has no team management (441.928708ms)
+✔ expired auth link produces recovery guidance and clears fragment without booting data (136.945083ms)
+✔ PIN digests use the agreed salt, recovery has a different namespace (732.212375ms)
+✔ rename plan updates repair/queue record, usage, every customer ticket and audit without mutating source (0.7995ms)
+✔ duplicate IDs and missing customer references refuse before writes (0.442833ms)
+✔ PIN gate remains operable after workspace permission handlers are installed (817.9545ms)
+✔ permission guards block an intake-only employee from inventory mutation and keep own profile available (803.042875ms)
+✔ new intake still saves locally and read-only employee cannot edit it (463.248ms)
+✔ single-file deliverable boots all seven original modules (653.21975ms)
+✔ remembered device skips PIN only while version matches; unchecked device asks for PIN next open (431.284042ms)
+✔ email sign-in advances to a visible first-PIN gate while the workspace stays locked (344.285917ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6204.270958

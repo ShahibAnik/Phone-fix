@@ -1,0 +1,19 @@
+# Local files and credentials
+.DS_Store
+**/.DS_Store
+.vercel/
+**/.vercel/
+.env
+.env.*
+!.env.example
+node_modules/
+.vscode/
+# Historical exports and local handoff bundles
+/backups/
+/baseline/
+/deliverables/
+/phone-fix-ai-handoff/
+/phone-fix-release/
+/*.zip
+/download-files.json
+/*-manifest.json

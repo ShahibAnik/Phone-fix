@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<!-- (c) 2026 Md Shahib Hasan Anik. All rights reserved. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="Md Shahib Hasan Anik">
+<meta name="copyright" content="(c) 2026 Md Shahib Hasan Anik. All rights reserved.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Phone Fix — Store Workspace</title>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js" integrity="sha384-tOUygabpHGzWXpKv3qJM5f9tSgU6p5f4ooCayrNDwzm3/3/CDMzgHMLQZiMMGghV" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/legacy.css?v=20261026a">
+
+<link rel="stylesheet" href="/assets/workspace.css?v=20261027a"><link rel="stylesheet" href="/assets/orange.css?v=20261026a"><link rel="stylesheet" href="/assets/access.css?v=20261026a"><link rel="stylesheet" href="/assets/operations.css?v=20261104c"></head>
+<body class="paper-grain pf-locked">
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="thermalLogoSymbol" viewBox="0 0 500 220">
+    <g stroke="#000000" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="160" cy="55" r="24" stroke-width="2.5" />
+      <path d="M148 43 L172 67" stroke-width="2.5" />
+      <path d="M144 47 L147 44 M173 70 L176 67" stroke-width="2.5" />
+      <path d="M172 43 L148 67" stroke-width="2.5" />
+      <path d="M176 47 L173 44 M147 70 L144 67" stroke-width="2.5" />
+      <rect x="226" y="24" width="48" height="68" rx="8" stroke-width="3" fill="#ffffff" />
+      <rect x="233" y="34" width="34" height="46" rx="2" stroke-width="1.8" />
+      <line x1="245" y1="29" x2="255" y2="29" stroke-width="2" />
+      <circle cx="250" cy="86" r="2" fill="#000000" />
+      <circle cx="340" cy="55" r="24" stroke-width="2.5" />
+      <line x1="329" y1="44" x2="351" y2="66" stroke-width="2.5" />
+      <line x1="351" y1="44" x2="329" y2="66" stroke-width="2.5" />
+      <circle cx="327" cy="42" r="1.5" fill="#000000" />
+      <circle cx="353" cy="42" r="1.5" fill="#000000" />
+    </g>
+    <line x1="25" y1="108" x2="195" y2="108" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="205" cy="108" r="2.5" fill="#000000" />
+    <circle cx="295" cy="108" r="2.5" fill="#000000" />
+    <line x1="305" y1="108" x2="475" y2="108" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+    <text x="250" y="146" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="800" letter-spacing="0.5" fill="#000000">Phone Fix Accessories</text>
+    <line x1="40" y1="158" x2="460" y2="158" stroke="#000000" stroke-width="1.2" />
+    <text x="250" y="180" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#000000">2900 Island Ave #2920, Philadelphia, PA 19153</text>
+    <text x="250" y="200" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#000000">(267) 344-9102</text>
+  </symbol>
+  <symbol id="starIcon" viewBox="0 0 24 24">
+    <path d="M12 2.5l2.9 6.03 6.6.77-4.87 4.6 1.29 6.6L12 17.4l-5.92 3.1 1.29-6.6-4.87-4.6 6.6-.77z"/>
+  </symbol>
+</svg>
+
+<!-- ============ HEADER ============ -->
+<header class="top">
+  <div style="max-width:1440px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.6rem;">
+    <div style="display:flex;align-items:center;gap:0.7rem;min-width:0;">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </div>
+      <div style="min-width:0;">
+        <h1 style="color:#fff;font-weight:700;font-size:0.95rem;line-height:1.2;letter-spacing:-0.01em;">Phone Fix Accessories</h1>
+        <p style="color:#9AA3AD;font-size:0.7rem;line-height:1.3;">2900 Island Ave #2920, Philadelphia · (267) 344-9102</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+      <div class="view-tabs" role="tablist" aria-label="Switch screen">
+                <button type="button" class="inv-tab" id="tabHome" role="tab">🏠 Home</button>
+        <button type="button" class="view-tab active" id="tabIntake" data-view="intake" role="tab">Intake</button>
+        <button type="button" class="view-tab" id="tabQueue" data-view="queue" role="tab">Queue Board <span class="vt-count" id="queueTabCount">0</span></button>
+        <button type="button" class="inv-tab" id="tabInventory" role="tab">&#128230; Inventory <span class="vt-count" id="invTabCount">0</span></button>
+        <button type="button" class="inv-tab" id="tabStoreCredit" role="tab">&#128179; Store Credit / Order</button>
+      </div>
+      <span id="clockBadge" class="clock-chip" style="font-size:0.7rem;border-radius:999px;padding:0.35rem 0.7rem;"></span>
+      <span class="status-chip" style="font-size:0.7rem;font-weight:600;border-radius:999px;padding:0.35rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;">
+        <span style="width:6px;height:6px;border-radius:999px;background:#3DDCA8;"></span> Ready
+      </span>
+      <span id="savedBadge" class="saved-chip" style="display:none;font-size:0.7rem;font-weight:600;border-radius:999px;padding:0.35rem 0.7rem;align-items:center;gap:0.35rem;">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Saved
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MAIN ============ -->
+<main>
+  <div class="grid-shell">
+
+    <!-- LEFT: FORM & HISTORY -->
+    <section style="min-width:0;">
+
+      <!-- MASTER SEARCH -->
+      <div id="masterSearchWrap">
+        <div id="masterSearchBar">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+          <input id="masterSearch" type="text" placeholder="Search customers, tickets, devices…  (name, phone, ticket #, IMEI)" autocomplete="off" aria-label="Master search">
+          <button type="button" id="masterSearchClear" aria-label="Clear search" hidden>&times;</button>
+        </div>
+        <div id="masterSearchResults" hidden></div>
+      </div>
+
+      <div class="order-card" id="intakeCard">
+        <div class="order-head">
+          <div>
+            <div class="order-title">New Repair Intake</div>
+            <div class="order-sub">Record customer profile, pricing, audit timestamps, and presets.</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span class="ticket-pill" id="nextCustBadge" style="background:var(--purple-tint);color:var(--purple);border-color:#D6C2F2;">CUST-0000</span>
+            <span class="ticket-pill" id="nextIdBadge">—</span>
+          </div>
+        </div>
+
+        <form id="intakeForm" class="fields" novalidate>
+          <input type="hidden" id="boundCustomerId" value="">
+
+          <!-- REPEAT-ISSUE WARNING (same phone + model within 30 days) -->
+          <div id="repeatWarn" class="repeat-warn" style="display:none;"></div>
+
+          <!-- RETURNING CUSTOMER RECOGNITION BANNER -->
+          <div id="customerMatchBanner" class="match-banner" style="display:none;">
+            <div class="match-banner-header">
+              <span class="match-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                Customer Recognized: <span id="matchCustName">—</span> (<span id="matchCustId" class="mono"></span>)
+              </span>
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <button type="button" id="viewMatchProfileBtn" class="tool-btn accent" style="padding:0.2rem 0.6rem;font-size:0.68rem;height:auto;">View Dossier</button>
+                <button type="button" id="dismissMatchBtn" style="border:none;background:transparent;font-weight:700;color:var(--green);cursor:pointer;font-size:0.8rem;">✕</button>
+              </div>
+            </div>
+            <div style="margin-top:0.4rem;display:flex;gap:0.8rem;font-size:0.72rem;color:var(--ink-soft);flex-wrap:wrap;">
+              <span><b>Visits:</b> <span id="matchVisitCount">0</span></span>
+              <span><b>LTV Spend:</b> <span id="matchLtvSpend">$0.00</span></span>
+              <span><b>Last Visit:</b> <span id="matchLastVisit">Never</span></span>
+            </div>
+            <!-- Past Devices Quick Chips -->
+            <div id="matchDevicesWrap" style="margin-top:0.5rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+              <span style="font-size:0.68rem;font-weight:700;color:var(--ink-soft);">Past Devices:</span>
+              <div id="matchDevicesList" style="display:inline-flex;gap:0.3rem;flex-wrap:wrap;"></div>
+            </div>
+            <!-- Phone Change Prompt -->
+            <div id="phoneChangePrompt" style="display:none;margin-top:0.6rem;padding:0.4rem 0.6rem;background:#fff;border-radius:6px;border:1px solid #A4DBC7;align-items:center;justify-content:space-between;">
+              <span style="color:var(--amber);font-size:0.72rem;font-weight:600;">Different phone typed! Update customer's primary number?</span>
+              <button type="button" id="applyPhoneChangeBtn" class="tool-btn" style="font-size:0.68rem;padding:0.2rem 0.5rem;">Update Profile</button>
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div>
+              <label class="field-label" for="custPhone">Phone number</label>
+              <input id="custPhone" required type="tel" inputmode="numeric" maxlength="14" placeholder="(555) 000-0000" class="field-input mono">
+            </div>
+            <div>
+              <label class="field-label" for="custName">Customer full name</label>
+              <input id="custName" required type="text" placeholder="John Doe" class="field-input">
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div>
+              <label class="field-label" for="deviceModel">
+                <span>Device model</span>
+                <span style="font-size:0.64rem;color:#9C9585;">Quick presets below</span>
+              </label>
+              <input id="deviceModel" required type="text" list="deviceDataList" placeholder="iPhone 15 Pro / Galaxy S24" class="field-input">
+              <datalist id="deviceDataList">
+                <option value="iPhone 8/SE">
+                <option value="iPhone XR">
+                <option value="iPhone 11">
+                <option value="iPhone 12">
+                <option value="iPhone 12 Mini">
+                <option value="iPhone 12 Pro">
+                <option value="iPhone 12 Pro Max">
+                <option value="iPhone 13">
+                <option value="iPhone 13 Mini">
+                <option value="iPhone 13 Pro">
+                <option value="iPhone 13 Pro Max">
+                <option value="iPhone 14">
+                <option value="iPhone 14 Plus">
+                <option value="iPhone 14 Pro">
+                <option value="iPhone 14 Pro Max">
+                <option value="iPhone 15">
+                <option value="iPhone 15 Plus">
+                <option value="iPhone 15 Pro">
+                <option value="iPhone 15 Pro Max">
+                <option value="iPhone 16">
+                <option value="iPhone 16 Plus">
+                <option value="iPhone 16 Pro">
+                <option value="iPhone 16 Pro Max">
+                <option value="iPhone 17">
+                <option value="iPhone 17 Pro Max">
+                <option value="Galaxy S23 Ultra">
+                <option value="Galaxy S24 Ultra">
+                <option value="Galaxy S24+">
+                <option value="Galaxy S24">
+                <option value="Galaxy Z Fold 5">
+                <option value="Galaxy Z Flip 5">   
+                <option value="Pixel 8 Pro">
+                <option value="Pixel 8">
+                <option value="Pixel 7 Pro">
+                <option value="Pixel 7">
+                <option value="Pixel 6 Pro">
+                <option value="Pixel 6">
+                <option value="Pixel 5">
+                <option value="Pixel 4a">
+                <option value="iPad A16 (10th Gen)">
+              </datalist>
+              <div class="preset-row">
+                <span class="preset-chip" data-target="deviceModel" data-val="iPhone 13">iPhone 13</span>
+                <span class="preset-chip" data-target="deviceModel" data-val="iPhone 14">iPhone 14</span>
+                <span class="preset-chip" data-target="deviceModel" data-val="iPhone 15 Pro">iPhone 15 Pro</span>
+                <span class="preset-chip" data-target="deviceModel" data-val="iPhone 16 Pro Max">iPhone 16 Pro Max</span>
+                <span class="preset-chip" data-target="deviceModel" data-val="iPhone 17 Pro Max">iPhone 17 Pro Max</span>
+                <span class="preset-chip" data-target="deviceModel" data-val="Galaxy S24 Ultra">Galaxy S24 Ultra</span>
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="devicePasscode">Passcode / PIN</label>
+              <input id="devicePasscode" type="text" placeholder="e.g. 123456 or Swipe Pattern" class="field-input mono">
+            </div>
+          </div>
+
+          <!-- PRICING, TAX, AND PAYMENT STATUS -->
+          <div class="field-row cols-3">
+            <div>
+              <label class="field-label" for="repairPrice">Subtotal price ($)</label>
+              <div class="price-wrap"><span>$</span><input id="repairPrice" type="number" step="0.01" min="0" placeholder="0.00" class="field-input"></div>
+            </div>
+            <div>
+              <label class="field-label" for="taxToggle">Sales tax (8%)</label>
+              <label class="toggle-field" style="justify-content:space-between;">
+                <span style="font-size:0.85rem;font-weight:600;">Apply 8%</span>
+                <input type="checkbox" id="taxToggle" checked style="width:16px;height:16px;accent-color:var(--orange);">
+              </label>
+            </div>
+            <div>
+              <label class="field-label">Payment status</label>
+              <label class="toggle-field" style="cursor:pointer;">
+                <input type="checkbox" id="paymentStatus">
+                <span id="paymentStatusText" style="font-size:0.85rem;font-weight:700;color:var(--amber);">DUE</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field-row cols-2" style="margin-top:-0.5rem;margin-bottom:1rem;">
+            <div>
+              <label class="field-label" for="fixedBy">
+                <span>Fixed by (tech)</span>
+                <span style="font-size:0.64rem;color:#9C9585;">Quick presets below</span>
+              </label>
+              <input id="fixedBy" type="text" list="techNameList" placeholder="e.g. Alex" class="field-input">
+              <datalist id="techNameList"></datalist>
+              <div class="preset-row" id="techChipsMain"></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;background:var(--paper);border:1.5px solid var(--line);border-radius:9px;padding:0.65rem 1rem;">
+              <div style="font-size:0.75rem;color:var(--ink-soft);">
+                <span>Sub: <b id="displaySubtotal" class="mono">$0.00</b></span> · 
+                <span>Tax: <b id="displayTax" class="mono">$0.00</b></span>
+              </div>
+              <div style="font-size:0.9rem;font-weight:800;color:var(--ink);">
+                Total: <span id="displayTotal" class="mono" style="color:var(--orange);">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div>
+              <label class="field-label">Priority</label>
+              <label class="toggle-field" style="cursor:pointer;">
+                <input type="checkbox" id="priorityToggle">
+                <span id="priorityToggleText" style="font-size:0.85rem;font-weight:700;color:#8A8272;">NORMAL</span>
+              </label>
+            </div>
+            <div>
+              <label class="field-label" for="readyByOverride">
+                <span>Ready by</span>
+                <span style="font-size:0.64rem;color:#9C9585;">Pick a time to override</span>
+              </label>
+              <div class="rb-box">
+                <span class="rb-live" id="readyByLive">&mdash;</span>
+                <button type="button" class="rb-auto" id="readyByAuto" hidden>Auto</button>
+                <input id="readyByOverride" type="time" class="field-input rb-time" aria-label="Ready-by time override">
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Warranty</label>
+              <button type="button" id="warrantyBtn" class="tool-btn" style="font-weight:700;">🛡 Warranty: <span id="warrantyBtnLabel">7 days</span></button>
+              <div id="warrantyPicker" style="display:none;gap:0.35rem;flex-wrap:wrap;align-items:center;margin-top:0.4rem;">
+                <button type="button" class="tool-btn" data-w="7">7 days</button>
+                <button type="button" class="tool-btn" data-w="14">14 days</button>
+                <button type="button" class="tool-btn" data-w="30">30 days</button>
+                <button type="button" class="tool-btn" data-w="90">90 days</button>
+                <label style="font-size:0.75rem;font-weight:700;">Custom (days) <input id="warrantyCustom" type="number" min="0" max="3650" placeholder="e.g. 21" class="field-input mono" style="width:5.5rem;display:inline-block;"></label>
+                <button type="button" class="tool-btn accent" id="warrantyApply">Apply</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Parts used</label>
+              <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+                <div style="position:relative;flex:1;min-width:10rem;">
+                  <input id="intakePartSearch" type="text" placeholder="Search part — model, type, color, SKU…" autocomplete="off" class="field-input">
+                  <div id="intakePartResults" hidden style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--line);border-radius:9px;box-shadow:0 18px 40px -12px rgba(20,26,33,.35);max-height:240px;overflow-y:auto;z-index:60;"></div>
+                </div>
+                <label style="font-size:0.75rem;font-weight:700;">Qty <input id="intakePartQty" type="number" min="1" value="1" class="field-input mono" style="width:4rem;display:inline-block;"></label>
+                <button type="button" id="intakePartAdd" class="tool-btn accent">+ Add</button>
+              </div>
+              <div id="intakePartsList" style="margin-top:0.4rem;display:flex;flex-direction:column;gap:0.25rem;"></div>
+              <div id="intakePartsTotal" style="font-size:0.78rem;font-weight:800;margin-top:0.25rem;"></div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label" for="repairNotes">
+                <span>Repair notes / issues</span>
+                <span style="font-size:0.64rem;color:#9C9585;">Tap to append issue</span>
+              </label>
+              <textarea id="repairNotes" required rows="2" placeholder="Screen replacement, battery drain, no charge..." class="field-input"></textarea>
+              <div class="preset-row">
+                <span class="preset-chip" data-append="repairNotes" data-val="Screen replacement">Screen Replacement</span>
+                <span class="preset-chip" data-append="repairNotes" data-val="Battery replacement">Battery Swap</span>
+                <span class="preset-chip" data-append="repairNotes" data-val="Charge port repair">Charge Port</span>
+                <span class="preset-chip" data-append="repairNotes" data-val="Back glass repair">Back Glass</span>
+                <span class="preset-chip" data-append="repairNotes" data-val="Water damage clean">Water Damage</span>
+                <span class="preset-chip" data-append="repairNotes" data-val="Diagnostic / No power">Diagnostic</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-foot">
+            <p style="font-size:0.7rem;color:#A9A292;">Generates 2-in-1 thermal label with persistent Customer ID.</p>
+            <div style="display:flex;gap:0.5rem;">
+              <button type="button" id="resetBtn" class="btn-ghost">Clear</button>
+              <button type="submit" class="btn-primary">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save &amp; print
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="ledger">
+        <div class="ledger-head">
+          <div>
+            <div class="ledger-title">Intake history</div>
+            <div class="ledger-sub"><span id="historyCount">0</span> records saved</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;width:100%;" class="sm-row">
+            <div class="search-box" style="width:100%;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="searchHistory" type="text" placeholder="SQL Search: Name, Phone, Old Phone, CUST-ID, Ticket, Device, Issue...">
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+              <button id="exportCsvBtn" class="tool-btn" style="flex:1;justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+              </button>
+              <button id="addHistoryBtn" class="tool-btn accent" style="flex:1;justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESKTOP TABLE -->
+        <div class="hide-mobile" style="overflow-x:auto;">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th class="col-status">Phone Status</th>
+                <th class="col-customer">Customer / LTV</th>
+                <th class="col-device">Device</th>
+                <th class="col-price">Price / Status</th>
+                <th class="col-tech">Tech</th>
+                <th class="col-action">Action</th>
+                <th class="col-review">Review</th>
+                <th class="col-ticket">Ticket &amp; Timestamps</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+
+        <!-- MOBILE CARDS -->
+        <div id="historyMobileList" class="show-mobile"></div>
+
+        <div id="emptyState" class="empty-state">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 4v5"/></svg>
+          <p>No repairs logged yet — saved intakes will appear here.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: PREVIEW -->
+    <section>
+      <div class="rail">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+          <span class="rail-label">Live tag preview</span>
+          <span class="mono" style="font-size:0.68rem;color:#A9A292;">100mm × 150mm</span>
+        </div>
+
+        <div class="stub-outer">
+          <div class="stub">
+            <div class="stub-watermark"><svg width="230"><use href="#thermalLogoSymbol" /></svg></div>
+            <div class="stub-inner">
+              <div class="stub-top">
+                <div>
+                  <span id="pvTicket" class="stub-id">FIX-00000000-0000</span>
+                  <div id="pvCustId" class="mono" style="font-size:0.68rem;color:var(--purple);font-weight:700;">CUST-0000</div>
+                </div>
+                <span id="pvDate" class="stub-date"></span>
+              </div>
+              <div class="stub-name-row">
+                <div>
+                  <p id="pvName" class="stub-name">Customer name</p>
+                  <span id="pvLtvBadge" class="badge-ltv ltv-new">1ST VISIT</span>
+                </div>
+                <span id="pvStatusBadge" class="badge badge-due">DUE</span>
+              </div>
+              <div class="stub-grid">
+                <p><b>Phone</b> <span id="pvPhone">—</span></p>
+                <p><b>Device</b> <span id="pvDevice">—</span></p>
+                <p><b>Passcode</b> <span id="pvCode" class="mono">—</span></p>
+                <p><b>Total</b> <span id="pvPrice" style="font-weight:700;color:var(--ink);">$0.00</span></p>
+                <p style="grid-column:1/-1;"><b>Fixed by</b> <span id="pvFixedBy">—</span></p>
+                <p style="grid-column:1/-1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><b>Notes</b> <span id="pvNotes">—</span></p>
+              </div>
+            </div>
+            <div class="stub-perf"></div>
+            <div class="stub-barcode"><svg id="barcodeSvg" width="100%" height="40"></svg></div>
+            <div class="stub-foot">Phone Fix Accessories · Keep for pickup</div>
+          </div>
+        </div>
+
+        <button id="printBtn" class="print-cta">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print label sticker
+        </button>
+
+        <!-- PHONES AT STORE / NOT DELIVERED -->
+        <div class="nd-panel">
+          <div class="nd-head">
+            <div class="nd-head-top">
+              <span class="rail-label">Phone at store · not delivered</span>
+              <span class="nd-count" id="ndCount">0</span>
+            </div>
+            <select id="ndSort" class="nd-sort-select">
+              <option value="days-desc">Sort: Longest waiting first</option>
+              <option value="days-asc">Sort: Shortest waiting first</option>
+              <option value="date-desc">Sort: Newest received</option>
+              <option value="date-asc">Sort: Oldest received</option>
+              <option value="amount-desc">Sort: Highest price</option>
+              <option value="amount-asc">Sort: Lowest price</option>
+              <option value="name-asc">Sort: Name A–Z</option>
+              <option value="name-desc">Sort: Name Z–A</option>
+            </select>
+            <div class="nd-totals">
+              <div class="nd-total-chip">
+                <span class="lbl">Not delivered</span>
+                <span class="val" id="ndTotalValue">$0.00</span>
+              </div>
+              <div class="nd-total-chip due">
+                <span class="lbl">Money due</span>
+                <span class="val" id="ndTotalDue">$0.00</span>
+              </div>
+            </div>
+          </div>
+          <div id="ndList" class="nd-list"></div>
+          <div id="ndEmpty" class="nd-empty">All caught up — no phones waiting at the store.</div>
+        </div>
+
+        <div class="info-note">
+          <b>Local storage persistence:</b> Profiles, change logs, and visit timestamps are stored on this device and synced to the shop's Google Sheet when online.
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ HOME / ANALYTICS ============ -->
+
+<div id="homeView" hidden>
+  <div class="hm-inner">
+    <section class="hm-hero">
+      <div class="hm-hero-label">After <em>App Built</em></div>
+      <div class="hm-hero-sub">Every ticket, dollar and customer this app has tracked — live from your synced data.</div>
+      <div class="hm-hero-grid">
+        <div class="hm-big"><span class="hm-big-num" id="hmTotRepairs">0</span><span class="hm-big-lbl">Repairs done</span></div>
+        <div class="hm-big"><span class="hm-big-num" id="hmTotRevenue">$0</span><span class="hm-big-lbl">Revenue tracked</span></div>
+        <div class="hm-big"><span class="hm-big-num" id="hmTotCustomers">0</span><span class="hm-big-lbl">Customers served</span></div>
+      </div>
+    </section>
+
+    <div class="hm-daynav">
+      <button type="button" class="hm-daybtn" id="hmDayPrev" aria-label="Previous day">‹</button>
+      <span class="hm-daylbl" id="hmDayLabel">Today</span>
+      <button type="button" class="hm-daybtn" id="hmDayNext" aria-label="Next day" disabled>›</button>
+      <button type="button" class="hm-daybtn hm-daytoday" id="hmDayToday" hidden>Today</button>
+    </div>
+
+    <div class="hm-kpis">
+      <div class="hm-kpi"><b id="hmTodayTickets">0</b><span id="hmTicketsLbl">Tickets today</span></div>
+      <div class="hm-kpi"><b class="up" id="hmTodayRevenue">$0</b><span id="hmRevenueLbl">Revenue today</span></div>
+      <div class="hm-kpi"><b id="hmInShop">0</b><span>In shop now</span></div>
+      <div class="hm-kpi"><b class="warn" id="hmReady">0</b><span>Ready for pickup</span></div>
+      <div class="hm-kpi"><b class="up" id="hmCollected">$0</b><span>Collected (paid)</span></div>
+      <div class="hm-kpi"><b class="bad" id="hmDue">$0</b><span>Still due</span></div>
+    </div>
+
+    <div class="hm-grid2">
+      <div class="hm-card">
+        <h3>📈 Repairs — last 14 days</h3>
+        <p>Tickets created per day, all stores on this device's synced data.</p>
+        <div class="hm-bars" id="hmBars"></div>
+      </div>
+      <div class="hm-card">
+        <h3>🎯 Ticket status</h3>
+        <p>Where every tracked ticket stands right now.</p>
+        <div class="hm-donut-wrap">
+          <div class="hm-donut" id="hmDonut" data-total="0"></div>
+          <div class="hm-legend" id="hmLegend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hm-grid2">
+      <div class="hm-card">
+        <h3>🏆 Tech leaderboard</h3>
+        <p>Phones fixed and revenue per technician.</p>
+        <div id="hmTechs"></div>
+      </div>
+      <div class="hm-card">
+        <h3>📱 Most repaired devices</h3>
+        <p>Top device models across all tickets.</p>
+        <div id="hmDevices"></div>
+      </div>
+    </div>
+
+    <div class="hm-grid2">
+      <div class="hm-card">
+        <h3>📦 Inventory snapshot</h3>
+        <p>Phones and stock value from the inventory tab.</p>
+        <div id="hmInv"></div>
+      </div>
+      <div class="hm-card">
+        <h3>⚠️ Parts running low</h3>
+        <p>Parts at or below their low-stock level.</p>
+        <div id="hmLow"></div>
+      </div>
+    </div>
+
+    <section class="hm-card hm-cal-card">
+      <div class="hm-cal-head">
+        <h3>📅 Calendar — fixes &amp; collected</h3>
+        <div class="hm-cal-views" id="hmCalViews">
+          <button type="button" data-calview="month" class="on">Month</button>
+          <button type="button" data-calview="week">Week</button>
+          <button type="button" data-calview="day">Day</button>
+          <button type="button" data-calview="agenda">Agenda</button>
+        </div>
+      </div>
+      <div class="hm-cal-nav">
+        <button type="button" id="hmCalPrev" class="hm-cal-navbtn" aria-label="Previous">&#8249;</button>
+        <div class="hm-cal-title" id="hmCalTitle">—</div>
+        <button type="button" id="hmCalNext" class="hm-cal-navbtn" aria-label="Next">&#8250;</button>
+        <button type="button" id="hmCalToday" class="hm-cal-navbtn wide">Today</button>
+        <span class="hm-cal-jump">
+          <select id="hmCalMonthSel" aria-label="Month"></select>
+          <select id="hmCalYearSel" aria-label="Year"></select>
+        </span>
+      </div>
+      <div class="hm-cal-summary" id="hmCalSummary"></div>
+      <div id="hmCalBody"></div>
+      <div class="hm-cal-detail" id="hmCalDetail"></div>
+    </section>
+
+    <div class="hm-updated" id="hmUpdated"></div>
+  </div>
+</div>
+
+<!-- ============ QUEUE BOARD ============ -->
+<div id="queueView" class="qv" hidden>
+  <div class="qv-inner">
+    <div class="qv-head">
+      <div>
+        <h2>Repair Queue</h2>
+        <p id="qvSubtitle">Serial order</p>
+      </div>
+      <div class="qv-controls">
+        <button type="button" id="qvNewIntakeBtn" class="qv-navbtn" style="background:var(--orange);border-color:var(--orange);color:#fff;font-weight:800;">+ New Intake</button>
+        <div class="qv-nav">
+          <button type="button" class="qv-navbtn" id="qvPrev">&#9664; Prev</button>
+          <span class="qv-daylabel" id="qvDayLabel">Today</span>
+          <button type="button" class="qv-navbtn" id="qvNext">Next &#9654;</button>
+          <button type="button" class="qv-navbtn qv-todaybtn" id="qvToday">Today</button>
+        </div>
+        <label class="qv-sortbox"><span>Sort</span>
+          <select id="qvSort" class="nd-sort-select">
+            <option value="serial-asc">Serial &uarr;</option>
+            <option value="serial-desc">Serial &darr;</option>
+            <option value="priority">Priority first</option>
+            <option value="leftovers">Leftovers first</option>
+            <option value="status">Status</option>
+            <option value="name">Name A&ndash;Z</option>
+            <option value="price">Price (high to low)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="qv-stats">
+      <span class="qv-stat"><b id="qvCountQueued">0</b> Queued</span>
+      <span class="qv-stat s-progress"><b id="qvCountProgress">0</b> In progress</span>
+      <span class="qv-stat s-ready"><b id="qvCountReady">0</b> Ready</span>
+    </div>
+    <div class="qv-banner" id="qvLeftBanner" hidden><span id="qvLeftText"></span><button type="button" class="qv-navbtn" id="qvLeftReview">Review &amp; carry</button></div>
+    <div class="qv-carrybar" id="qvCarryBar" hidden><span id="qvCarryText"></span><button type="button" class="qv-btn qv-carryall" id="qvCarryAll">Carry all</button></div>
+    <div class="qv-review" id="qvSelfReview" hidden><div class="qv-review-head">📝 Self-intake — needs review <span id="qvSelfCount"></span></div><div class="qv-grid" id="qvSelfGrid"></div></div>
+    <div class="qv-grid" id="qvGrid"></div>
+    <div class="qv-empty" id="qvEmpty" hidden></div>
+  </div>
+  <aside id="fixedPanel" aria-label="Fixed phones">
+    <button type="button" id="fpHead">
+      <span>&#9989; Fixed <span id="fpDay">today</span></span>
+      <span id="fpCount">0</span>
+      <span id="fpChev">&#9662;</span>
+    </button>
+    <div id="fpList"></div>
+  </aside>
+</div>
+
+<button type="button" id="scrollTopBtn" title="Back to top" aria-label="Back to top">&#8593;</button>
+
+<button type="button" id="intakeFabBtn" aria-label="New intake">+ New Intake</button>
+
+<!-- Intake form modal (the real intake card moves in here; same form, same save+sync) -->
+<div id="intakeModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:46rem;position:relative;">
+    <button type="button" id="intakeModalClose" class="modal-close" aria-label="Close" style="position:absolute;top:0.55rem;right:0.8rem;z-index:3;font-size:1.25rem;font-weight:800;line-height:1;">&times;</button>
+    <div id="intakeModalBody" style="padding:1rem;"></div>
+  </div>
+</div>
+
+<div id="reviewModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:34rem;position:relative;">
+    <button type="button" id="rvClose" class="modal-close" aria-label="Close" style="position:absolute;top:0.55rem;right:0.8rem;z-index:3;font-size:1.25rem;font-weight:800;line-height:1;">&times;</button>
+    <div style="padding:1.1rem 1.2rem 1.2rem;">
+      <h3 style="margin:0 0 0.15rem;">💲 Review check-in</h3>
+      <div class="mono" id="rvTicket" style="font-size:0.8rem;color:var(--ink-soft);margin-bottom:0.8rem;"></div>
+      <div id="rvPrioBanner" style="display:none;background:#FDECEA;border:1.5px solid var(--red);color:#8F1D1D;border-radius:10px;padding:0.55rem 0.8rem;font-weight:700;margin-bottom:0.9rem;">⭐ Priority requested — this repair goes next (+$10 fee)</div>
+      <div id="rvInfo" style="font-size:0.92rem;line-height:1.55;margin-bottom:0.9rem;"></div>
+      <label class="field-label" for="rvFixedBy">Who is fixing? <span style="color:var(--red);">Required</span></label>
+      <input type="text" id="rvFixedBy" required maxlength="80" autocomplete="name" placeholder="Technician name" style="width:100%;font-size:1rem;padding:0.6rem 0.7rem;border:1.5px solid var(--line);border-radius:10px;margin-bottom:0.7rem;">
+      <label class="field-label" for="rvService">What are we fixing? <span style="color:var(--red);">Required</span></label>
+      <input type="text" id="rvService" required maxlength="160" placeholder="e.g. iPhone 13 screen replacement" style="width:100%;font-size:1rem;padding:0.6rem 0.7rem;border:1.5px solid var(--line);border-radius:10px;margin-bottom:0.7rem;">
+      <label class="field-label" for="rvPrice">Fixing price ($)</label>
+      <input type="number" id="rvPrice" required min="0" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;font-size:1.1rem;padding:0.6rem 0.7rem;border:1.5px solid var(--line);border-radius:10px;">
+      <label style="display:flex;align-items:center;gap:0.5rem;margin:0.8rem 0;font-weight:600;font-size:0.92rem;cursor:pointer;">
+        <input type="checkbox" id="rvTax" checked style="width:1.15rem;height:1.15rem;"> Add 8% tax
+      </label>
+      <div id="rvBreak" style="border:1.5px solid var(--line);border-radius:10px;padding:0.7rem 0.9rem;font-size:0.95rem;line-height:1.6;"></div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:1.1rem;">
+        <button type="button" id="rvApprove" class="qv-btn go-confirm" style="flex:1;min-width:11rem;padding:0.7rem;">✓ Approve &amp; print label</button>
+        <button type="button" id="rvNoPrio" class="qv-btn" style="display:none;padding:0.7rem;">Approve without priority</button>
+        <button type="button" id="rvCancel" class="qv-btn" style="padding:0.7rem;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden print label -->
+<div id="printLabel">
+  <div class="pl-half pl-top">
+    <div class="pl-watermark"><svg><use href="#thermalLogoSymbol" /></svg></div>
+    <div class="pl-content">
+      <div class="pl-section-title pl-title-row"><span>Device Intake Tag</span><span class="pl-store-tag">Phone Fix Penrose Plaza</span></div>
+      <div class="pl-row">
+        <div>
+          <span class="pl-id" id="prTicketTop">FIX-00000000-0000</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:7pt;margin-left:4pt;font-weight:700;" id="prCustTop">CUST-0000</span>
+        </div>
+        <span class="pl-date" id="prDateTop"></span>
+      </div>
+      <div class="pl-queue-row" id="prQueueRowTop" hidden><div class="pl-queue-box"><span class="pl-queue-label">QUEUE #</span><span class="pl-queue-num" id="prQueueNumTop">000</span></div><span class="pl-priority-stamp" id="prPriorityTop" hidden>PRIORITY</span></div>
+      <div class="pl-row" style="margin-top:1.5pt;"><div class="pl-name" id="prNameTop">—</div><div class="pl-badge" id="prStatusTop">DUE</div></div>
+      <div class="pl-meta">
+        <div class="pl-device-highlight"><b>Device:</b> <span id="prDeviceTop">—</span></div>
+        <div><b>Phone:</b> <span id="prPhoneTop">—</span> | <b>Price:</b> <span id="prPriceTop">$0.00</span></div>
+        <div><b>Passcode:</b> <span id="prCodeTop">—</span></div>
+        <div><b>Fixed By:</b> <span id="prFixedByTop">—</span></div>
+        <div><b>Notes:</b> <span id="prNotesTop">—</span></div>
+        <div><b>Warranty:</b> <span id="prWarrantyTop">—</span></div>
+      </div>
+      <div class="pl-barcode-wrap"><svg class="pl-barcode" id="prBarcodeTop"></svg><div class="pl-foot">STORE / DEVICE COPY</div></div>
+    </div>
+  </div>
+  <div class="pl-cutline"><span class="pl-cutline-icon">✂</span><span class="pl-cutline-text">Cut / Fold Here</span><span class="pl-cutline-icon">✂</span></div>
+  <div class="pl-half pl-bottom">
+    <div class="pl-watermark"><svg><use href="#thermalLogoSymbol" /></svg></div>
+    <div class="pl-content">
+      <div class="pl-store-head">
+        <div class="pl-store-name">Phone Fix Accessories</div>
+      </div>
+      <div class="pl-section-title">Customer Claim Receipt</div>
+      <div class="pl-row">
+        <div>
+          <span class="pl-id" id="prTicketBtm">FIX-00000000-0000</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:7pt;margin-left:4pt;font-weight:700;" id="prCustBtm">CUST-0000</span>
+        </div>
+        <span class="pl-date" id="prDateBtm"></span>
+      </div>
+      <div class="pl-queue-row" id="prQueueRowBtm" hidden><div class="pl-queue-box"><span class="pl-queue-label">QUEUE #</span><span class="pl-queue-num" id="prQueueNumBtm">000</span></div><span class="pl-priority-stamp" id="prPriorityBtm" hidden>PRIORITY</span><div class="pl-ready" id="prReadyBtm" hidden><span class="pl-ready-label">READY BY</span><span class="pl-ready-time" id="prReadyTimeBtm"></span></div></div>
+      <div class="pl-row" style="margin-top:1.5pt;"><div class="pl-name" id="prNameBtm">—</div><div class="pl-badge" id="prStatusBtm">DUE</div></div>
+      <div class="pl-meta">
+        <div class="pl-device-highlight"><b>Device:</b> <span id="prDeviceBtm">—</span></div>
+        <div><b>Phone:</b> <span id="prPhoneBtm">—</span></div>
+        <div id="prBreakBtm" hidden style="font-weight:700;"></div>
+        <div><b>Subtotal:</b> <span id="prSubtotalBtm">$0.00</span> | <b>Tax (8%):</b> <span id="prTaxBtm">$0.00</span></div>
+        <div style="font-size:8.5pt;font-weight:900;margin-top:2pt;"><b>TOTAL DUE:</b> <span id="prTotalBtm">$0.00</span></div>
+      </div>
+      <div class="pl-instructions">We will hold your phone not more than 14 days. After 14 days, if it is lost we are not responsible. Present this receipt to claim your device.</div>
+      <div class="pl-warranty" id="prWarrantyBtm">Warranty: 7 days</div>
+      <div class="pl-barcode-wrap"><svg class="pl-barcode" id="prBarcodeBtm"></svg><div class="pl-foot">PHONE FIX ACCESSORIES · CUSTOMER COPY · KEEP FOR PICKUP</div></div>
+      <div class="pl-foot-addr">2900 Island Ave #2920, Philadelphia, PA 19153</div>
+      <div class="pl-phone-bar">&#9742; CALL (267) 344-9102</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CUSTOMER DOSSIER / PROFILE MODAL ============ -->
+<div id="profileModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="profModalTitle" style="font-size:1rem;font-weight:700;">Customer Profile Dossier</h3>
+        <p id="profModalCustId" class="mono" style="font-size:0.75rem;color:var(--purple);font-weight:700;margin-top:0.1rem;">CUST-0000</p>
+        <p id="profQueueLine" hidden></p>
+      </div>
+      <button id="profileModalClose" class="modal-close">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div style="padding:1.3rem 1.4rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;background:var(--paper);padding:0.9rem;border-radius:10px;border:1px solid var(--line);">
+        <div>
+          <span style="font-size:0.7rem;color:var(--ink-soft);font-weight:600;">Customer Name</span>
+          <div id="profCustName" style="font-size:0.95rem;font-weight:700;margin-top:0.1rem;">—</div>
+          <div id="profTierBadge" class="badge-ltv ltv-new" style="margin-top:0.3rem;">1ST VISIT</div>
+        </div>
+        <div>
+          <span style="font-size:0.7rem;color:var(--ink-soft);font-weight:600;">Active Contact</span>
+          <div id="profCustPhone" class="mono" style="font-size:0.9rem;font-weight:700;margin-top:0.1rem;">—</div>
+          <div style="font-size:0.72rem;color:var(--ink-soft);margin-top:0.3rem;">
+            <b>LTV:</b> <span id="profCustLTV">$0.00</span> (<span id="profCustVisits">0</span> visits)
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.1rem;">
+        <span style="font-size:0.72rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;">Phone History &amp; Number Changes</span>
+        <div id="profPhoneHistoryList" style="margin-top:0.4rem;display:flex;flex-direction:column;gap:0.3rem;">
+          <span style="font-size:0.75rem;color:#9C9585;">No phone number changes on record.</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1.1rem;">
+        <span style="font-size:0.72rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;">Device Fleet</span>
+        <div id="profDeviceFleetList" style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.4rem;"></div>
+      </div>
+
+      <div style="margin-top:1.2rem;">
+        <span style="font-size:0.72rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;">Repair Visit History</span>
+        <div id="profVisitTimeline" style="margin-top:0.6rem;max-height:220px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HISTORY EDIT / ADD MODAL ============ -->
+<div id="historyModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="historyModalTitle" style="font-size:0.95rem;font-weight:700;">Add history record</h3>
+      <button id="historyModalClose" class="modal-close">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="historyForm" style="padding:1.3rem 1.4rem;" novalidate>
+      <input type="hidden" id="hmRecordId">
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label" for="hmTicketId">Ticket ID</label>
+          <input id="hmTicketId" required type="text" placeholder="FIX-20260101-0001" class="field-input mono">
+        </div>
+        <div>
+          <label class="field-label" for="hmCustId">Customer ID</label>
+          <input id="hmCustId" required type="text" placeholder="CUST-1001" class="field-input mono">
+        </div>
+      </div>
+
+      <div id="hmRepeatLine" class="hm-repeat-line" style="display:none;"></div>
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label" for="hmName">Customer full name</label>
+          <input id="hmName" required type="text" placeholder="John Doe" class="field-input">
+        </div>
+        <div>
+          <label class="field-label" for="hmPhone">Phone number</label>
+          <input id="hmPhone" required type="tel" inputmode="numeric" maxlength="14" placeholder="(555) 000-0000" class="field-input mono">
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label" for="hmDevice">Device model</label>
+          <input id="hmDevice" required type="text" placeholder="iPhone 15 Pro" class="field-input">
+        </div>
+        <div>
+          <label class="field-label" for="hmCode">Passcode / PIN</label>
+          <input id="hmCode" type="text" placeholder="e.g. 123456" class="field-input mono">
+        </div>
+      </div>
+
+      <div class="field-row cols-3">
+        <div>
+          <label class="field-label" for="hmPrice">Subtotal price ($)</label>
+          <div class="price-wrap"><span>$</span><input id="hmPrice" type="number" step="0.01" min="0" placeholder="0.00" class="field-input"></div>
+        </div>
+        <div>
+          <label class="field-label" for="hmTaxToggle">Sales tax (8%)</label>
+          <label class="toggle-field" style="justify-content:space-between;">
+            <span style="font-size:0.85rem;font-weight:600;">Apply 8%</span>
+            <input type="checkbox" id="hmTaxToggle" checked style="width:16px;height:16px;accent-color:var(--orange);">
+          </label>
+        </div>
+        <div>
+          <label class="field-label">Payment status</label>
+          <label class="toggle-field">
+            <input type="checkbox" id="hmIsPaid">
+            <span id="hmIsPaidText" style="font-size:0.85rem;font-weight:700;color:var(--amber);">DUE</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label" for="hmFixedBy">Fixed by (tech)</label>
+          <input id="hmFixedBy" type="text" list="techNameList" placeholder="e.g. Alex" class="field-input">
+          <div class="preset-row" id="techChipsModal"></div>
+        </div>
+        <div>
+          <label class="field-label">Total Calculated</label>
+          <div style="height:44px;display:flex;align-items:center;padding:0 0.85rem;background:var(--paper-dim);border:1.5px solid var(--line);border-radius:9px;">
+            <span id="hmCalculatedTotal" class="mono" style="font-weight:800;color:var(--ink);">$0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Warranty</label>
+          <button type="button" id="hmWarrantyBtn" class="tool-btn" style="font-weight:700;">🛡 Warranty: <span id="hmWarrantyBtnLabel">7 days</span></button>
+          <div id="hmWarrantyPicker" style="display:none;gap:0.35rem;flex-wrap:wrap;align-items:center;margin-top:0.4rem;">
+            <button type="button" class="tool-btn" data-w="7">7 days</button>
+            <button type="button" class="tool-btn" data-w="14">14 days</button>
+            <button type="button" class="tool-btn" data-w="30">30 days</button>
+            <button type="button" class="tool-btn" data-w="90">90 days</button>
+            <label style="font-size:0.75rem;font-weight:700;">Custom (days) <input id="hmWarrantyCustom" type="number" min="0" max="3650" placeholder="e.g. 21" class="field-input mono" style="width:5.5rem;display:inline-block;"></label>
+            <button type="button" class="tool-btn accent" id="hmWarrantyApply">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label">Phone Status</label>
+          <label class="toggle-field">
+            <input type="checkbox" id="hmIsDelivered">
+            <span id="hmIsDeliveredText" style="font-size:0.85rem;font-weight:700;color:#8A8272;">IN SHOP</span>
+          </label>
+        </div>
+        <div>
+          <label class="field-label" for="hmDeliveredAt">Delivered timestamp</label>
+          <input id="hmDeliveredAt" type="text" placeholder="Not delivered yet" disabled class="field-input" style="background:#F1EDE3;color:#9C9585;cursor:not-allowed;">
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div>
+          <label class="field-label">Customer rating</label>
+          <div class="rate-picker">
+            <div class="stars interactive" id="hmStarPicker" data-value="0">
+              <svg class="star-empty" data-star="1"><use href="#starIcon"/></svg>
+              <svg class="star-empty" data-star="2"><use href="#starIcon"/></svg>
+              <svg class="star-empty" data-star="3"><use href="#starIcon"/></svg>
+              <svg class="star-empty" data-star="4"><use href="#starIcon"/></svg>
+              <svg class="star-empty" data-star="5"><use href="#starIcon"/></svg>
+            </div>
+            <span id="hmRatingLabel" style="font-size:0.72rem;color:#A9A292;margin-left:0.3rem;">No rating</span>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="hmReviewText">Review comment</label>
+          <input id="hmReviewText" type="text" placeholder="What did the customer say?" class="field-input">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label" for="hmNotes">Repair notes / issues</label>
+          <textarea id="hmNotes" rows="2" placeholder="Screen replacement, battery drain, no charge..." class="field-input"></textarea>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Parts used</label>
+          <div id="hmPartsUsed" style="font-size:0.78rem;background:var(--paper);border:1.5px solid var(--line);border-radius:9px;padding:0.5rem 0.7rem;">No parts linked to this ticket yet.</div>
+          <div style="margin-top:0.4rem;">
+            <button type="button" class="tool-btn" id="hmPartAddBtn">+ Add part</button>
+          </div>
+          <div id="hmPartPicker" hidden style="margin-top:0.4rem;border:1.5px solid var(--line);border-radius:9px;padding:0.5rem;background:#fff;">
+            <div style="display:flex;gap:0.4rem;">
+              <input id="hmPartSearch" class="field-input" placeholder="Search part by model, type, SKU…" autocomplete="off" style="flex:1;">
+              <input id="hmPartQty" type="number" min="1" value="1" class="field-input" style="width:4rem;">
+              <button type="button" class="tool-btn" id="hmPartAddGo">Add</button>
+            </div>
+            <div id="hmPartResults" style="max-height:180px;overflow-y:auto;margin-top:0.3rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label" for="hmDate">Intake timestamp</label>
+          <input id="hmDate" type="text" placeholder="Jan 01, 2026 · 10:00 AM" class="field-input">
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.5rem;padding-top:0.9rem;border-top:1px dashed var(--line);">
+        <button type="button" id="historyModalCancel" class="btn-ghost">Cancel</button>
+        <button type="submit" class="btn-primary">Save record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!-- ============ INVENTORY ============ -->
+<!-- ============ INVENTORY SUB-TABS + PARTS ============ -->
+
+<div id="invView" class="inv" hidden>
+  <div class="inv-inner">
+    <div class="inv-head-row">
+      <div>
+        <h2>&#128230; Phone Inventory</h2>
+        <p>Stock, layaway and sales &middot; synced with your Google Sheet</p>
+      </div>
+      <div class="inv-tools">
+        <span class="inv-sync" id="invSync">&#9679; local</span>
+        <button type="button" class="inv-btn primary" id="invMasterBtn">&#128269; Search inventory</button>
+        <button type="button" class="inv-btn ghost" id="invExport">&#11015; Export</button>
+        <button type="button" class="inv-btn ghost" id="invLayaway">&#128203; Layaway</button>
+        <button type="button" class="inv-btn primary" id="invAdd">+ Add phone</button>
+      </div>
+    </div>
+    <div class="inv-subtabs" id="invSubTabs">
+      <button type="button" class="inv-subtab active" id="invSubPhones">&#128241; Phones</button>
+      <button type="button" class="inv-subtab" id="invSubParts">&#128736; Parts<span class="pcount" id="ptTabCount"></span></button>
+      <button type="button" class="inv-subtab" id="invSubAcc">&#129520; Accessories<span class="pcount" id="acTabCount"></span></button>
+    </div>
+    <div id="invPhonesView">
+    <div class="inv-stats" id="invStats"></div>
+    <button type="button" class="inv-dead-banner" id="invDeadBanner" hidden></button>
+    <section class="inv-analytics">
+      <div class="inv-an-head">
+        <div class="inv-an-title">&#128202; Analytics</div>
+        <div class="inv-seg" id="invChartTabs">
+          <button type="button" data-mode="profit" class="on">Profit</button>
+          <button type="button" data-mode="models">Models</button>
+          <button type="button" data-mode="dealers">Dealers</button>
+          <button type="button" data-mode="margins">Dealer margins</button>
+        </div>
+      </div>
+      <div id="invChart"></div>
+    </section>
+    <div class="inv-filters">
+      <input type="search" id="invSearch" class="inv-in inv-search" placeholder="Search IMEI or product name&hellip;" autocomplete="off">
+      <div class="inv-chipbar" id="invChips"></div>
+    </div>
+    <div class="inv-list" id="invList"></div>
+    </div><!-- /invPhonesView -->
+    <div id="invPartsView" hidden>
+      <div class="pt-stats">
+        <div class="pt-stat"><b id="ptUnits">0</b><span>units</span></div>
+        <div class="pt-stat"><b id="ptCash">$0</b><span>tied up</span></div>
+        <div class="pt-stat" id="ptLowW"><b id="ptLow">0</b><span>low stock</span></div>
+        <div class="pt-stat"><span class="pt-sync" id="ptSync">&#9679; local</span><span>sync</span></div>
+      </div>
+      <div class="pt-brands" id="ptSections" style="margin-bottom:0.45rem;"></div>
+      <div class="pt-brands" id="ptBrands"></div>
+      <div class="pt-toolbar">
+        <input type="search" id="ptSearch" class="inv-in" placeholder="Search model, type or SKU&hellip;" autocomplete="off">
+        <select id="ptModelF" class="inv-in" style="max-width:9rem;"><option value="">All models</option></select>
+      </div>
+      <div class="pt-toolbar">
+        <button type="button" class="inv-btn primary" id="ptAdd" style="flex:1;">+ Add part</button>
+        <button type="button" class="inv-btn ghost" id="ptReorder">&#128203; Reorder list</button>
+        <button type="button" class="inv-btn ghost" id="ptToOrder">&#128230; To Order <span id="ptToOrderCount"></span></button>
+      </div>
+      <div class="pt-toolbar">
+        <div style="position:relative;flex:1;min-width:10rem;">
+          <input type="search" id="ptQuickSearch" class="inv-in" placeholder="⚡ Quick use — search part…" autocomplete="off">
+          <div id="ptQuickResults" hidden style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--line);border-radius:9px;box-shadow:0 18px 40px -12px rgba(20,26,33,.35);max-height:240px;overflow-y:auto;z-index:60;"></div>
+        </div>
+        <input id="ptQuickQty" type="number" min="1" value="1" class="inv-in" style="width:4.5rem;">
+        <button type="button" class="inv-btn primary" id="ptQuickAdd">⚡ Quick use</button>
+      </div>
+      <div id="ptList"></div>
+    </div><!-- /invPartsView -->
+    <div id="invAccView" hidden>
+      <div class="pt-stats">
+        <div class="pt-stat"><b id="acUnits">0</b><span>units</span></div>
+        <div class="pt-stat"><b id="acCash">$0</b><span>tied up</span></div>
+        <div class="pt-stat" id="acLowW"><b id="acLow">0</b><span>low stock</span></div>
+        <div class="pt-stat"><span class="pt-sync" id="acSync">&#9679; local</span><span>sync</span></div>
+      </div>
+      <div class="pt-brands" id="acSections"></div>
+      <div class="pt-toolbar">
+        <input type="search" id="acSearch" class="inv-in" placeholder="Search model, section or SKU&hellip;" autocomplete="off">
+        <select id="acModelF" class="inv-in" style="max-width:9rem;"><option value="">All models</option></select>
+      </div>
+      <div class="pt-toolbar">
+        <button type="button" class="inv-btn primary" id="acAdd" style="flex:1;">+ Add accessory</button>
+        <button type="button" class="inv-btn ghost" id="acReorder">&#128203; Reorder list</button>
+      </div>
+      <div id="acList"></div>
+    </div><!-- /invAccView -->
+  </div>
+</div>
+
+<div class="inv-overlay" id="invSearchOverlay" hidden>
+  <div class="inv-modal wide" id="invSearchModal">
+    <div class="inv-modal-head"><h3>&#128269; Search inventory</h3><button type="button" class="inv-modal-close" id="invSearchClose" aria-label="Close">&#10005;</button></div>
+    <div style="padding:0.9rem 1rem 0.4rem;">
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <input id="invSearchInput" class="inv-in" style="flex:1;" placeholder="Search phones, parts &amp; accessories&hellip; IMEI, name, SKU, model, dealer, color" autocomplete="off">
+        <button type="button" class="inv-btn ghost" id="invSearchClear" hidden>&times;</button>
+      </div>
+    </div>
+    <div id="invSearchResults" style="padding:0 0.4rem 0.6rem;max-height:62vh;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<div class="inv-overlay" id="ptOverlay" hidden>
+  <div class="inv-modal" id="ptModal">
+    <div class="inv-modal-head"><h3 id="ptModalTitle"></h3><button type="button" class="inv-modal-close" id="ptModalClose" aria-label="Close">&#10005;</button></div>
+    <div id="ptModalBody" class="pt-form"></div>
+  </div>
+</div>
+
+<div class="inv-overlay" id="ptUseOverlay" hidden>
+  <div class="inv-modal" id="ptUseModal">
+    <div class="inv-modal-head"><h3 id="ptUseTitle">Use part</h3><button type="button" class="inv-modal-close" id="ptUseClose" aria-label="Close">&#10005;</button></div>
+    <div id="ptUseBody"></div>
+  </div>
+</div>
+
+<div class="inv-overlay" id="acOverlay" hidden>
+  <div class="inv-modal" id="acModal">
+    <div class="inv-modal-head"><h3 id="acModalTitle"></h3><button type="button" class="inv-modal-close" id="acModalClose" aria-label="Close">&#10005;</button></div>
+    <div id="acModalBody" class="pt-form"></div>
+  </div>
+</div>
+
+<div class="inv-overlay" id="invOverlay" hidden>
+  <div class="inv-modal" id="invModal">
+    <div class="inv-modal-head"><h3 id="invModalTitle"></h3><button type="button" class="inv-modal-close" id="invModalClose" aria-label="Close">&#10005;</button></div>
+    <div id="invModalBody"></div>
+  </div>
+</div>
+
+<datalist id="invNameList"></datalist>
+<datalist id="invDealerList"></datalist>
+<datalist id="invStorageList"><option value="64GB"><option value="128GB"><option value="256GB"><option value="512GB"><option value="1TB"></datalist>
+<div id="depositLabel" aria-hidden="true"></div>
+
+<!-- ============ STORE CREDIT / ORDER ============ -->
+
+<div id="scView" class="inv" hidden>
+  <div class="inv-inner">
+    <div class="inv-head-row">
+      <div>
+        <h2>&#128179; Store Credit / Order</h2>
+        <p>Special orders &amp; customer store credit &middot; synced with your Google Sheet</p>
+      </div>
+      <div class="inv-tools">
+        <span class="inv-sync" id="scSync">&#9679; local</span>
+        <button type="button" class="inv-btn primary" id="scAddSO">+ Special Order</button>
+        <button type="button" class="inv-btn purple" id="scAddCred">+ Issue Credit</button>
+      </div>
+    </div>
+    <div class="sc-subtabs">
+      <button type="button" class="sc-subtab active" id="scTabSO">Special Order</button>
+      <button type="button" class="sc-subtab" id="scTabCred">&#128179; Store Credit</button>
+    </div>
+    <div id="scSOPane">
+      <div class="inv-tools" style="margin-bottom:0.8rem;">
+        <input id="scSOSearch" class="inv-in" placeholder="Search customer / item&#8230;" style="max-width:260px;" autocomplete="off">
+      </div>
+      <div class="sc-grid" id="scSOList"></div>
+    </div>
+    <div id="scCredPane" hidden>
+      <div class="inv-tools" style="margin-bottom:0.8rem;">
+        <input id="scCredSearch" class="inv-in" placeholder="Search customer / phone&#8230;" style="max-width:260px;" autocomplete="off">
+      </div>
+      <div class="sc-grid" id="scCredList"></div>
+    </div>
+  </div>
+</div>
+<div class="inv-overlay" id="scOverlay" hidden>
+  <div class="inv-modal" id="scModal">
+    <div class="inv-modal-head"><h3 id="scModalTitle"></h3><button type="button" class="inv-modal-close" id="scModalClose" aria-label="Close">&#10005;</button></div>
+    <div id="scModalBody"></div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<footer id="appCopyright">&copy; 2026 Md Shahib Hasan Anik. All rights reserved.</footer>
+
+
+
+
+<script src="/assets/access.js?v=20261104c"></script><script src="/assets/permissions.js?v=20261104c"></script><script src="/assets/team.js?v=20261104c"></script><script src="/assets/identity.js?v=20261104c"></script><script src="/assets/sync.js?v=20261104c"></script><script src="/assets/manager.js?v=20261104c"></script><script src="/assets/operations-core.js?v=20261104c"></script><script src="/assets/operations.js?v=20261104c"></script><script src="/assets/workspace.js?v=20261104c"></script><script src="/assets/auth.js?v=20261104c"></script></body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Phone Fix Accessories — Repair Check-In</title>
+<meta name="description" content="Check in your device for repair at Phone Fix Accessories, Penrose Plaza, Philadelphia.">
+<style>
+  :root{
+    --ink:#141A21; --ink-soft:#4A4438; --amber:#E8930C; --amber-tint:#FFF3DF;
+    --line:#E7E0D0; --bg:#FAF7F0; --card:#FFFFFF; --green:#1E9E6A; --red:#D64545;
+    --radius:14px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  header{ background:var(--ink); color:#fff; padding:1.1rem 1.1rem 1rem; }
+  header .shop{ font-size:1.25rem; font-weight:800; letter-spacing:-0.01em; }
+  header .sub{ font-size:0.8rem; opacity:0.75; margin-top:0.15rem; }
+  header .addr{ font-size:0.78rem; opacity:0.9; margin-top:0.45rem; }
+  header .addr a{ color:#FFD9A0; text-decoration:none; font-weight:700; }
+  main{ max-width:560px; margin:0 auto; padding:1rem 1rem 2.5rem; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:1.1rem; box-shadow:0 1px 3px rgba(20,26,33,0.05); }
+  h1{ font-size:1.15rem; font-weight:800; margin-bottom:0.3rem; }
+  .hint{ font-size:0.85rem; color:var(--ink-soft); margin-bottom:1rem; }
+  label.flabel{ display:block; font-size:0.78rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft); margin:1rem 0 0.35rem; }
+  label.flabel:first-of-type{ margin-top:0.2rem; }
+  .opt{ text-transform:none; letter-spacing:0; font-weight:500; color:#9C9585; }
+  input[type=text], input[type=tel], textarea{
+    width:100%; font-size:1.05rem; padding:0.75rem 0.8rem; border:1.5px solid var(--line);
+    border-radius:10px; background:#FFFDF8; color:var(--ink); outline:none; font-family:inherit;
+  }
+  input[type=password]{ width:100%;font-size:1.05rem;padding:0.75rem 0.8rem;border:1.5px solid var(--line);border-radius:10px;background:#FFFDF8;color:var(--ink);outline:none;font-family:inherit; }
+  .required-label::after{ content:" · REQUIRED";color:var(--red);font-size:0.7rem;font-weight:900; }
+  .required-field{ border-color:#F0A3A3 !important;background:#FFF9F7 !important; }
+  .required-field:focus{ border-color:var(--amber) !important;box-shadow:0 0 0 3px var(--amber-tint); }
+  input:focus, textarea:focus{ border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-tint); }
+  textarea{ resize:vertical; min-height:56px; font-size:0.95rem; }
+  .chips{ display:flex; flex-wrap:wrap; gap:0.45rem; }
+  .chip{
+    border:1.5px solid var(--line); background:#FFFDF8; color:var(--ink); border-radius:999px;
+    padding:0.5rem 0.85rem; font-size:0.9rem; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .chip.on{ background:var(--amber); border-color:var(--amber); color:#fff; }
+  .err{ display:none; background:#FDECEC; border:1.5px solid var(--red); color:#8F1D1D; border-radius:10px; padding:0.6rem 0.8rem; font-size:0.88rem; margin-top:1rem; }
+  .submit{
+    width:100%; margin-top:1.2rem; background:var(--amber); color:#fff; border:none; border-radius:12px;
+    font-size:1.1rem; font-weight:800; padding:0.95rem; cursor:pointer; font-family:inherit;
+  }
+  .submit:disabled{ opacity:0.55; cursor:wait; }
+  .fineprint{ font-size:0.75rem; color:#9C9585; text-align:center; margin-top:0.8rem; }
+  .hp{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+  /* priority option */
+  .prio{ display:flex; gap:0.7rem; align-items:flex-start; margin-top:1.2rem; border:2px solid var(--line); border-radius:12px; padding:0.85rem 0.9rem; cursor:pointer; background:#FFFDF8; }
+  .prio.on{ border-color:var(--red); background:#FDF0EF; }
+  .prio input{ width:1.35rem; height:1.35rem; margin-top:0.1rem; accent-color:var(--red); flex:0 0 auto; cursor:pointer; }
+  .prio .t{ font-weight:800; font-size:1rem; display:block; }
+  .prio .d{ font-size:0.83rem; color:var(--ink-soft); margin-top:0.15rem; display:block; }
+  .prio .fee{ color:var(--red); font-weight:800; }
+  /* queue position on the success screen */
+  .qinfo{ border:1.5px solid var(--line); border-radius:12px; padding:0.85rem 0.9rem; margin:0 0 1rem; background:#FFFDF8; text-align:left; }
+  .qinfo .big{ font-size:1.12rem; font-weight:800; }
+  .qinfo .sub{ font-size:0.88rem; color:var(--ink-soft); margin-top:0.25rem; }
+  .qinfo.prio-yes{ border-color:var(--red); background:#FDF0EF; }
+  /* success / existing screens */
+  .done{ text-align:center; padding:0.6rem 0.2rem; }
+  .done .check{ font-size:2.6rem; }
+  .done h2{ font-size:1.2rem; font-weight:800; margin:0.4rem 0 0.2rem; }
+  .done p{ font-size:0.92rem; color:var(--ink-soft); }
+  .ticketbox{ background:var(--amber-tint); border:2px dashed var(--amber); border-radius:12px; padding:0.9rem; margin:1rem 0; }
+  .ticketbox .lbl{ font-size:0.72rem; font-weight:800; letter-spacing:0.1em; color:var(--ink-soft); }
+  .ticketbox .num{ font-size:1.7rem; font-weight:800; letter-spacing:0.02em; margin-top:0.15rem; }
+  .ticketbox .dev{ font-size:0.9rem; margin-top:0.2rem; }
+  .again{ margin-top:1.1rem; background:none; border:none; color:var(--amber); font-weight:700; font-size:0.95rem; cursor:pointer; font-family:inherit; }
+</style>
+<link rel="stylesheet" href="/assets/checkin.css?v=20261024c">
+</head>
+<body>
+<header>
+  <div class="shop">Phone Fix Accessories</div>
+  <div class="sub">Repair check-in · Penrose Plaza</div>
+  <div class="addr">2900 Island Ave #2920, Philadelphia, PA 19153 · <a href="tel:+12673449102">(267) 344-9102</a></div>
+<a class="staff-link" href="/">Staff sign-in ↗</a></header>
+
+<main>
+  <div class="card" id="formCard">
+    <h1>Check in your device</h1>
+    <p class="hint">Fill this out and show your ticket number at the counter. We'll confirm it and print your label — takes about a minute.</p>
+
+    <form id="checkinForm" novalidate>
+      <label class="flabel required-label" for="fName">Your name</label>
+      <input class="required-field" type="text" id="fName" required aria-required="true" autocomplete="name" placeholder="Full name" maxlength="80">
+
+      <label class="flabel required-label" for="fPhone">Mobile phone</label>
+      <input class="required-field" type="tel" id="fPhone" required aria-required="true" autocomplete="tel" inputmode="tel" placeholder="(267) 555-0100" maxlength="14">
+
+      <label class="flabel required-label" for="fDevice">Device model</label>
+      <input class="required-field" type="text" id="fDevice" required aria-required="true" placeholder="e.g. iPhone 13, Galaxy S23, iPad 10" maxlength="80">
+
+      <label class="flabel">What's wrong with it? <span class="opt">(tap all that apply)</span></label>
+      <div class="chips" id="issueChips">
+        <button type="button" class="chip">Cracked screen</button>
+        <button type="button" class="chip">Battery drains fast</button>
+        <button type="button" class="chip">Not charging</button>
+        <button type="button" class="chip">Camera problem</button>
+        <button type="button" class="chip">Speaker / mic</button>
+        <button type="button" class="chip">Water damage</button>
+        <button type="button" class="chip">Won't turn on</button>
+        <button type="button" class="chip">Software issue</button>
+        <button type="button" class="chip">Other</button>
+      </div>
+
+      <label class="flabel" for="fDetails">Anything else? <span class="opt">(optional)</span></label>
+      <textarea id="fDetails" placeholder="Tell us anything that helps — when it started, how it happened…" maxlength="400"></textarea>
+
+      <label class="flabel required-label" for="fCode">Device passcode</label>
+      <input class="required-field" type="password" id="fCode" required aria-required="true" placeholder="e.g. 123456" maxlength="40" autocomplete="off">
+
+      <label class="prio" id="prioBox">
+        <input type="checkbox" id="fPriority">
+        <span>
+          <span class="t">⭐ Priority service</span>
+          <span class="d">Skip the line — your repair goes next. <span class="fee">+$10</span> · Our staff will confirm your priority at the counter.</span>
+        </span>
+      </label>
+
+      <input type="text" id="fWebsite" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="err" id="formErr"></div>
+      <button type="submit" class="submit" id="submitBtn">Check in →</button>
+      <p class="fineprint">No payment now — we check the device first and confirm the price with you at the counter.</p>
+    </form>
+  </div>
+
+  <div class="card done" id="doneCard" style="display:none;">
+    <div class="check">✅</div>
+    <h2>You're checked in!</h2>
+    <p>Show this ticket number at the counter:</p>
+    <div class="ticketbox">
+      <div class="lbl">TICKET NUMBER</div>
+      <div class="num" id="doneTicket">—</div>
+      <div class="dev" id="doneDevice"></div>
+    </div>
+    <div class="qinfo" id="doneQueue" style="display:none;">
+      <div class="big" id="doneQueueBig"></div>
+      <div class="sub" id="doneQueueSub"></div>
+    </div>
+    <p>A team member will confirm your ticket and print your label.<br>Questions? Call us at <a href="tel:+12673449102" style="color:var(--amber);font-weight:700;text-decoration:none;">(267) 344-9102</a>.</p>
+    <button class="again" id="againBtn">Check in another device</button>
+  </div>
+
+  <div class="card done" id="dupeCard" style="display:none;">
+    <div class="check">📋</div>
+    <h2>You already have a ticket</h2>
+    <p>This phone number + device was checked in within the last 24 hours:</p>
+    <div class="ticketbox">
+      <div class="lbl">EXISTING TICKET</div>
+      <div class="num" id="dupeTicket">—</div>
+      <div class="dev" id="dupeDevice"></div>
+    </div>
+    <p id="dupePrio" style="display:none;">⭐ Priority was requested on this ticket (<b>+$10</b>) — our staff will confirm it at the counter.</p>
+    <p>Just show this number at the counter — no need to check in again.</p>
+    <button class="again" id="dupeAgainBtn">This is a different device</button>
+  </div>
+</main>
+
+<script>
+if(new URLSearchParams(location.search).get("preview")==="1"){const sample=document.createElement("p");sample.className="preview-notice";sample.textContent="Sample check-in · no customer record will be sent";document.querySelector("main").prepend(sample);window.fetch=()=>Promise.resolve(new Response("[]",{status:200}));Object.defineProperty(window,"localStorage",{value:{getItem:()=>null,setItem:()=>{}}});}
+
+(function(){
+  'use strict';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzLGnaehuE8rrtr2vL_cjOpaxedw5IS8NXD-zEWJdsUGgYYljToLY0ZjBgKVm7vosmn/exec';
+  var SUPABASE_URL = 'https://nqmpplbddzigosyzwmbt.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_6LnFNGQR3dGBDWOGjF1ubg_pM3QODMl';
+  var IS_PREVIEW = new URLSearchParams(location.search).get('preview') === '1';
+  var TZ = 'America/New_York';
+  var $ = function(id){ return document.getElementById(id); };
+
+  function cleanPhone(v){ return String(v || '').replace(/\D/g, '').slice(-10); }
+  function formatPhone(v){
+    var d = cleanPhone(v);
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return '(' + d.slice(0,3) + ') ' + d.slice(3);
+    return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6);
+  }
+  function normModel(s){ return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+  function pad(n, l){ return String(n).padStart(l, '0'); }
+  function shopNow(){
+    // All stamps in shop time so ticket IDs/dates match the counter app.
+    var now = new Date();
+    var parts = new Intl.DateTimeFormat('en-US', { timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(now);
+    var p = {}; parts.forEach(function(x){ p[x.type] = x.value; });
+    return {
+      ms: now.getTime(),
+      stamp: p.year + p.month + p.day,
+      dateTime: new Intl.DateTimeFormat('en-US', { timeZone: TZ, month:'short', day:'2-digit', year:'numeric' }).format(now)
+        + ' ' + new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour:'2-digit', minute:'2-digit' }).format(now)
+    };
+  }
+  function showErr(msg){
+    var e = $('formErr');
+    e.textContent = msg;
+    e.style.display = 'block';
+    e.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  function hideErr(){ $('formErr').style.display = 'none'; }
+
+  $('fPhone').addEventListener('input', function(e){ e.target.value = formatPhone(e.target.value); });
+  var prioOn = false;
+  function btnLabel(){ return prioOn ? 'Check in — ⭐ Priority (+$10)' : 'Check in →'; }
+  $('fPriority').addEventListener('change', function(e){
+    prioOn = !!e.target.checked;
+    $('prioBox').classList.toggle('on', prioOn);
+    $('submitBtn').textContent = btnLabel();
+  });
+  var issues = [];
+  $('issueChips').addEventListener('click', function(e){
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    b.classList.toggle('on');
+    var v = b.textContent.trim();
+    if (b.classList.contains('on')) issues.push(v);
+    else issues = issues.filter(function(x){ return x !== v; });
+  });
+
+  // repairs currently in the line (waiting or being fixed) = people ahead of a new check-in
+  function lineAhead(arr){
+    var n = 0;
+    (arr || []).forEach(function(o){
+      if (!o) return;
+      var s = String(o.status || '').toLowerCase();
+      if (s === 'queued' || s === 'fixing') n++;
+    });
+    return n;
+  }
+  function isPrioRow(o){ return !!o && (o.priority === true || String(o.priority).toUpperCase() === 'TRUE'); }
+
+  function showDone(ticketId, device, info){
+    $('formCard').style.display = 'none';
+    $('dupeCard').style.display = 'none';
+    $('doneTicket').textContent = ticketId;
+    $('doneDevice').textContent = device || '';
+    var q = $('doneQueue');
+    if (info){
+      q.style.display = 'block';
+      q.classList.toggle('prio-yes', !!info.priority);
+      if (info.priority){
+        $('doneQueueBig').textContent = '⭐ Priority requested — you\'re next in line!';
+        $('doneQueueSub').textContent = 'People ahead of you: 0.'
+          + (info.ahead > 0 ? ' You skip the ' + info.ahead + ' repair' + (info.ahead === 1 ? '' : 's') + ' waiting right now.' : ' Nobody else is waiting right now.')
+          + ' Show your ticket at the counter — staff will confirm your priority (+$10) and your repair goes next.';
+      } else {
+        $('doneQueueBig').textContent = 'You\'re #' + (info.ahead + 1) + ' in line';
+        $('doneQueueSub').textContent = info.ahead === 0
+          ? 'Nobody is ahead of you right now. We\'ll confirm your printed queue number at the counter.'
+          : 'People ahead of you: ' + info.ahead + '. We\'ll confirm your printed queue number at the counter.';
+      }
+    } else {
+      q.style.display = 'none';
+    }
+    $('doneCard').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+  function showDupe(ticketId, device, prio){
+    $('formCard').style.display = 'none';
+    $('doneCard').style.display = 'none';
+    $('dupeTicket').textContent = ticketId;
+    $('dupeDevice').textContent = device || '';
+    $('dupePrio').style.display = prio ? 'block' : 'none';
+    $('dupeCard').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+  $('againBtn').addEventListener('click', function(){ location.reload(); });
+  var forceNew = false;
+  $('dupeAgainBtn').addEventListener('click', function(){
+    forceNew = true;
+    $('dupeCard').style.display = 'none';
+    $('formCard').style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+
+  $('checkinForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    hideErr();
+    // honeypot: real customers never see or fill this field
+    if ($('fWebsite').value){
+      showDone('—', $('fDevice').value.trim());
+      return;
+    }
+    var name = $('fName').value.trim();
+    var phoneRaw = $('fPhone').value;
+    var phone = cleanPhone(phoneRaw);
+    var device = $('fDevice').value.trim();
+    var details = $('fDetails').value.trim();
+    var code = $('fCode').value.trim();
+
+    if (name.length < 2) return showErr('Please enter your name.');
+    if (phone.length !== 10) return showErr('Please enter a 10-digit mobile number so we can reach you.');
+    if (device.length < 2) return showErr('Please enter your device model (e.g. iPhone 13).');
+    if (!code) return showErr('Please enter the device passcode so the technician can test the repair.');
+    if (!issues.length && !details) return showErr('Please tap what\'s wrong with the device, or write a short note.');
+
+    // simple rate limit: one check-in per minute from this browser
+    var last = 0;
+    try { last = Number(localStorage.getItem('pfSelfIntakeLast') || 0); } catch(err){}
+    if (Date.now() - last < 60000) return showErr('You just checked in a moment ago — please show your ticket number at the counter.');
+    try { localStorage.setItem('pfSelfIntakeLast', String(Date.now())); } catch(err){}
+
+    var btn = $('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Checking in…';
+
+    function fail(msg){
+      btn.disabled = false;
+      btn.textContent = btnLabel();
+      showErr(msg);
+    }
+
+    // Google Sheets is still used for duplicate detection and the repair row.
+    // Supabase reserves the Ticket ID atomically across every device and role.
+    function buildAndPost(arr, t, ticketId, offlineNote){
+      var notes = issues.join(', ');
+      if (details) notes = notes ? notes + ' — ' + details : details;
+      var body = {
+        recordType: 'repair',
+        ticketId: ticketId,
+        customerName: name,
+        phone: formatPhone(phoneRaw),
+        deviceModel: device,
+        passcode: code,
+        price: 0,
+        priceFormatted: '$0.00',
+        paymentStatus: 'DUE',
+        fixedBy: '',
+        notes: notes,
+        dateTime: t.dateTime,
+        createdAtMs: t.ms,
+        status: 'Self-intake',
+        statusChangedAt: t.dateTime,
+        customerId: '',
+        subtotal: 0,
+        taxAmount: 0,
+        isTaxable: false,
+        warrantyDays: 7,
+        queueDay: t.stamp,
+        priority: prioOn
+      };
+      fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+        .then(function(){ showDone(ticketId, device, { priority: prioOn, ahead: lineAhead(arr) }); var when=document.createElement('p');when.className='fineprint';when.textContent='Submitted '+new Date(t.ms).toLocaleString();$('doneCard').appendChild(when); if (offlineNote){ var n=document.createElement('p');n.className='fineprint';n.textContent=offlineNote;$('doneCard').appendChild(n); } })
+        .catch(function(){ fail('Could not send your check-in. Please come to the counter and we\'ll check you in there.'); });
+    }
+
+    function reserveTicket(arr, t){
+      var maxSeq = 0;
+      arr.forEach(function(o){
+        var m = /^FIX-(\d{8})-(\d+)$/.exec(String((o && o.ticketId) || ''));
+        if (m && m[1] === t.stamp) maxSeq = Math.max(maxSeq, parseInt(m[2], 10));
+      });
+      if (IS_PREVIEW) return Promise.resolve('FIX-' + t.stamp + '-' + pad(maxSeq + 1,4));
+      return fetch(SUPABASE_URL + '/rest/v1/rpc/pf_reserve_ticket_id', {
+        method:'POST', headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({minimum_value:maxSeq})
+      }).then(function(r){ return r.json().then(function(data){ if(!r.ok)throw new Error((data&&data.message)||'Ticket service unavailable');return data; }); })
+        .then(function(data){ if(!data||!data.id)throw new Error('Ticket service unavailable');return data.id; });
+    }
+
+    function handleRepairs(data){
+      var arr = Array.isArray(data) ? data : (data && (data.data || data.rows)) || [];
+      var t = shopNow();
+      // duplicate guard: same phone + same model within 24h
+      if (!forceNew){
+        var dupe = null;
+        arr.forEach(function(o){
+          if (!o || !o.ticketId) return;
+          if (cleanPhone(o.phone) !== phone) return;
+          if (normModel(o.deviceModel) !== normModel(device)) return;
+          var created = Number(o.createdAtMs) || 0;
+          if (created && t.ms - created < 86400000 && t.ms - created > -300000) dupe = o;
+        });
+        if (dupe){
+          btn.disabled = false;
+          btn.textContent = btnLabel();
+          showDupe(String(dupe.ticketId), String(dupe.deviceModel || device), isPrioRow(dupe));
+          return;
+        }
+      }
+      reserveTicket(arr,t).then(function(ticketId){ buildAndPost(arr,t,ticketId,null); })
+        .catch(function(){ fail('We could not reserve a safe ticket number. Please check your signal or come to the counter. Nothing was overwritten.'); });
+    }
+
+    function loadAndSubmit(attempt){
+      fetch(ENDPOINT + '?action=repairs&_=' + Date.now())
+        .then(function(r){ if (!r.ok) throw new Error('http'); return r.json(); })
+        .then(function(data){
+          // Cache the list so the next check-in within 10 minutes skips the
+          // ~8s download entirely and submits almost instantly.
+          try { localStorage.setItem('pfSelfIntakeCache', JSON.stringify({ t: Date.now(), data: data })); } catch(err){}
+          handleRepairs(data);
+        })
+        .catch(function(){
+          if (attempt < 1){ setTimeout(function(){ loadAndSubmit(attempt + 1); }, 1200); return; }
+          // Supabase can still issue a collision-proof ID when the Sheet list is unavailable.
+          var t = shopNow();
+          reserveTicket([],t).then(function(ticketId){ buildAndPost([],t,ticketId,'The repair list was slow, but your Ticket ID was safely reserved. Please show it at the counter.'); })
+            .catch(function(){ fail('We could not reserve a safe ticket number. Please check your signal or come to the counter. Nothing was overwritten.'); });
+        });
+    }
+    // Fast path: a fresh cached list (under 10 minutes old) skips the download.
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem('pfSelfIntakeCache') || 'null'); } catch(err){}
+    if (cached && cached.data && (Date.now() - Number(cached.t || 0)) < 600000) handleRepairs(cached.data);
+    else loadAndSubmit(0);
+  });
+})();
+</script>
+</body>
+</html>

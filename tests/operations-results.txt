@@ -1,0 +1,43 @@
+✔ repair updates preserve newer status, zero/false extras and audit notes (2.279875ms)
+✔ warranty backfill does not overwrite existing zero days (0.664958ms)
+✔ both separate scripts refuse ID rename before any Sheet write (1.859458ms)
+✔ inventory aliases preserve explicit zero values and payment arrays serialize (0.383167ms)
+✔ sheet worker upserts the same stable ID and rejects stale overwrites (1.655375ms)
+✔ sheet worker never overwrites an unrelated existing tab layout (0.961292ms)
+✔ payroll uses effective daily rates, half days, adjustments and allocated partial payments (6.747625ms)
+✔ missing payroll rates are explicit (0.070958ms)
+✔ sales analytics distinguish recorded zero from missing days (0.47825ms)
+✔ phone matching normalizes US prefix and amounts use cents (0.173125ms)
+✔ initial backup retains every field and retries a failed request without blocking original storage (3.47175ms)
+✔ a save during an in-flight request remains queued after the old event is acknowledged (0.487375ms)
+✔ two browser tabs retain independent pending edits and deletion markers (0.916ms)
+✔ mirror quota failures do not cancel the original Google-sync data write (0.537708ms)
+✔ unrelated auth/dirty state is not mirrored; old outbox survives an upgrade (0.334583ms)
+✔ offline work stays queued and batches never exceed the server limit (2.090709ms)
+✔ restricted account backs up permitted edits while retaining blocked pending events for a manager (0.477667ms)
+✔ original workspace boots, zero-permission employee sees no management, intake-only employee has intake access but no delete permission (398.559083ms)
+✔ developer row never offers edit; manager cannot edit owner; intake-only employee has no team management (158.487458ms)
+✔ expired auth link produces recovery guidance and clears fragment without booting data (99.291458ms)
+✔ PIN digests use the agreed salt, recovery has a different namespace (209.368417ms)
+✔ rename plan updates repair/queue record, usage, every customer ticket and audit without mutating source (0.285ms)
+✔ duplicate IDs and missing customer references refuse before writes (0.199292ms)
+✔ PIN gate remains operable after workspace permission handlers are installed (257.128583ms)
+✔ permission guards block an intake-only employee from inventory mutation and keep own profile available (258.283666ms)
+✔ new intake still saves locally and read-only employee cannot edit it (219.541792ms)
+✔ customer check-in clearly requires name, phone, model, and device passcode (1.227625ms)
+✔ single-file deliverable boots all seven original modules (184.535125ms)
+✔ remembered device skips PIN only while version matches; unchecked device asks for PIN next open (193.78875ms)
+✔ email sign-in advances to a visible first-PIN gate while the workspace stays locked (228.259042ms)
+✔ URL restores queue, four lanes move ticket through delivery without paying it (306.5685ms)
+✔ daily sales save computes totals, duplicate date refuses, employee cannot access page (322.189ms)
+✔ daily attendance, rate and partial payroll payment flow (397.7015ms)
+✔ quick flag stores issue, star hover previews without saving, resolve preserves history (292.183583ms)
+✔ daily sales records selected employee attendance once and clock route redirects (451.237583ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4207.676375
