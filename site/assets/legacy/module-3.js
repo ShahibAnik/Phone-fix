@@ -351,7 +351,8 @@
     if (!navigator.onLine){ setSync('offline'); return; }
     setSync('syncing');
     fetch(ENDPOINT + '?action=parts').then(function(r){ if(!r.ok) throw 0; return r.json(); })
-      .then(function(data){
+      .then(async function(data){
+        if(Array.isArray(data))data=await PhoneFixCommerce.reconcileStock('parts',data);
         var arr = Array.isArray(data) ? data : (data && (data.data || data.items || data.rows));
         if (!Array.isArray(arr)) return;
         var map = {}, order = [];

@@ -13,7 +13,7 @@
  toorder_manage:'[data-oa], [data-ra], #ptQuickAdd',
  settings_manage:'#pfRulesForm, [data-rule]',team_manage:'#pfTeamForm'
  };
- function routeAllowed(key){if(['days','payroll'].includes(key))return true;if(key==='daily')return ['developer','owner','manager'].includes(A().member?.role);if(key==='notes')return ['intake_create','history_edit','ticket_edit'].some(p=>A().can(p));if(key==='audit')return A().can('history_edit')&&A().can('costs_view');return key in routes&&routes[key].some(p=>A().can(p))||key==='days';}
+ function routeAllowed(key){if(key==='backup')return A().member?.role==='developer';if(key==='trade')return ['developer','owner','manager'].includes(A().member?.role);if(['days','payroll'].includes(key))return true;if(key==='daily')return ['developer','owner','manager'].includes(A().member?.role);if(key==='notes')return ['intake_create','history_edit','ticket_edit'].some(p=>A().can(p));if(key==='audit')return A().can('history_edit')&&A().can('costs_view');return key in routes&&routes[key].some(p=>A().can(p))||key==='days';}
  function fallback(){return ['overview','intake','history','inventory','days'].find(routeAllowed);}
  function required(el){for(const [permission,selector] of Object.entries(selectors))if(el.closest?.(selector))return permission;return null;}
  function deny(e){e.preventDefault();e.stopImmediatePropagation();let n=document.getElementById('pfPermissionError');if(!n){n=document.createElement('p');n.id='pfPermissionError';n.className='pf-toast';n.setAttribute('role','alert');document.body.append(n);}n.textContent="You don't have permission for this.";n.hidden=false;setTimeout(()=>n.hidden=true,4500);}

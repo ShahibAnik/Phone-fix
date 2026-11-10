@@ -52,3 +52,14 @@ Final test report: tests/operations-results.txt — 34/34 passing.
 Created Daily Sales, Daily Attendance, Payroll Rates, Payroll Adjustments, Payroll Payments, and Customer Notes inside the requested Inventory spreadsheet. Each has the same 24-column header row expected by the worker, bold headers, and a frozen first row. Verified all six A1:X1 ranges by copying their visible cell values and comparing against PF_OPS_HEADERS; all matched. Google Sheets reported Saved to Drive. Existing Inventory, ToOrder, Accessories, PartUsage, SpecialOrders, StoreCredit, and Parts tabs remain present. New tabs contain headers only.
 
 Post-deploy browser verification: latest production alias READY; sample Daily Sales form shows employee choices, saving a selected employee produces exactly one Present day and Days worked = 1. Clock attendance is absent from the navigation. Sample verification did not write business data.
+
+## Store billing and flags — 2026-11-10
+
+- Customer Flagged/ problems shows active flagged customers only. Quick Flag supports new callers; customer history retains timestamps when X resolves a flag.
+- Management → Store & employee billing: reusable store accounts, employee pay-later purchases, inventory/manual items, buying and selling prices, manual payments, and monthly CSV statements with opening/closing balances.
+- New inventory sales atomically reduce Supabase stock and record before/after snapshots. Stable request IDs prevent duplicate deductions. Pending Sheet conflicts are reported without silently overwriting unrelated quantities.
+- Developer → Master Backup downloads business records and audit history as dated JSON, plus this browser's business records. Security credentials are excluded. Restore is not automatic.
+- Supabase migration: store-billing.sql, followed by store-billing-ordering.sql. New tables and functions only; historical rows are not rewritten.
+- Inventory spreadsheet new tab: Store & Employee Billing. Apps Script TradeBilling.gs installed remotely as Untitled 2.gs alongside unchanged legacy Code.gs and daily operations worker. pfSyncTradeBilling runs every five minutes using the existing scoped connector token.
+- Validation: 40 Node tests pass. Transaction-only database fixture checks stock deduction, retry idempotency, initial payment, stale-stock rejection, manager/employee restrictions, and developer backup; all fixtures roll back.
+- Employee purchases do not deduct payroll automatically. Payroll partial-payment behavior remains available.

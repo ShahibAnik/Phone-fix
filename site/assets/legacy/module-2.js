@@ -70,7 +70,7 @@
     o = o || {};
     return {
       imei: str(o.imei), name: str(o.name), storage: str(o.storage),
-      price: num(o.price), qty: Math.max(1, num(o.qty, 1)), lot: Math.max(1, num(o.lot, 1)),
+      price: num(o.price), qty: Math.max(o.status === 'Sold' ? 0 : 1, num(o.qty, 1)), lot: Math.max(1, num(o.lot, 1)),
       dealer: str(o.dealer), date: isoDate(o.date) || todayISO(), status: normStatus(o.status),
       soldPrice: numOrBlank(o.soldPrice), soldDate: isoDate(o.soldDate), custName: str(o.custName), custPhone: str(o.custPhone),
       layCustomer: str(o.layCustomer || o.resName), layPhone: str(o.layPhone || o.resPhone),
@@ -124,9 +124,10 @@
     var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 12000);
     fetch(ENDPOINT + '?action=inventory', ctl ? { signal: ctl.signal } : {})
       .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-      .then(function(data){
+      .then(async function(data){
         var arr = Array.isArray(data) ? data : (data && (data.data || data.items || data.rows));
         if (!Array.isArray(arr)) throw new Error('bad payload');
+        arr = await PhoneFixCommerce.reconcileStock('inventory',arr);
         var map = {}, order = [];
         arr.forEach(function(row){
           if (row && (row.deleted === true || String(row.deleted).toLowerCase() === 'true')) return;

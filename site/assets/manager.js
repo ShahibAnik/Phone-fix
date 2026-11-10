@@ -68,5 +68,5 @@
  }
  function download(name,rows){const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/^[=+@-]/,"'").replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  function init(context,helpers){ctx=context;ui=helpers;members=ctx.preview?[{...ctx.member,user_id:ctx.user.id,status:'Active',created_at:new Date().toISOString()},{email:'alex@example.com',role:'employee',user_id:'preview-alex',status:'Active',created_at:new Date().toISOString()}]:[];}
- window.PhoneFixManager={init,register:(kind,fn)=>writers[kind]=fn,renderRecords,renderAttendance,renderTeam,renderAudit};
+ window.PhoneFixManager={applyTradeStock:(kind,id,before,after)=>{if(!manager())return;const current=rowsFor(kind).find(r=>r._recordId===id);if(current&&Number(current.qty)===Number(before.qty)&&writers[kind])writers[kind](id,after,false);},init,register:(kind,fn)=>writers[kind]=fn,renderRecords,renderAttendance,renderTeam,renderAudit};
 })();
