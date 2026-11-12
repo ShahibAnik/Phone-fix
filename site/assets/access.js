@@ -1,28 +1,37 @@
 /* Supabase identity remains authoritative. PIN is a convenience lock, never a new identity. */
 (function(root){
  'use strict';
- const ALL=['intake_create','ticket_edit','ticket_delete','ticket_pay','inventory_manage','costs_view','toorder_manage','history_edit','data_export','team_manage','settings_manage'];
+ const GROUPS={
+  'Repairs & customers':['repair_create','repair_view','repair_edit','repair_delete','repair_status','technician_assign','customer_history_view','customer_edit'],
+  'Payments & financial':['payment_record','refund_issue','discount_apply','financial_reports_view','costs_view','daily_closing_submit','daily_closing_edit'],
+  'Inventory':['inventory_view','inventory_add','inventory_edit','inventory_delete','suppliers_view','orders_manage'],
+  'Employee & administration':['attendance_view','attendance_own','attendance_edit','team_view','team_manage','settings_manage','data_export','audit_view']
+ };
+ const ALL=Object.values(GROUPS).flat();
+ const LEGACY={intake_create:['repair_create'],ticket_edit:['repair_edit','repair_status','technician_assign'],ticket_delete:['repair_delete'],ticket_pay:['payment_record'],inventory_manage:['inventory_view','inventory_add','inventory_edit','inventory_delete'],toorder_manage:['orders_manage'],history_edit:['repair_view','repair_edit','customer_history_view','customer_edit']};
  const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let state,context,locked=false,version=0,polling;
  const role=()=>state?.role||'employee';
- function can(permission,member=state){if(!member)return false;return ['developer','owner'].includes(member.role)||(member.role==='manager'&&member.permissions==null)||Array.isArray(member.permissions)&&member.permissions.includes(permission);}
+ function can(permission,member=state){if(!member)return false;if(['developer','owner'].includes(member.role)||(member.role==='manager'&&member.permissions==null)||(member.role==='employee'&&permission==='attendance_own'))return true;const granted=Array.isArray(member.permissions)?member.permissions:[];if(granted.includes(permission))return true;if(LEGACY[permission])return LEGACY[permission].some(p=>granted.includes(p));return Object.entries(LEGACY).some(([old,next])=>next.includes(permission)&&granted.includes(old));}
  function canMirror(event,before){
   if(locked)return false;const k=event.kind;
   if(k==='device_settings')return true;
-  if(k==='reorder')return can('toorder_manage');
-  if(['inventory','parts','accessories','usage','special_orders','store_credit'].includes(k))return can('inventory_manage');
-  if(k==='customers')return can('intake_create')||can('history_edit');
+  if(k==='reorder')return can('orders_manage');
+  if(['inventory','parts','accessories','usage','special_orders','store_credit'].includes(k)){if(event.deleted)return can('inventory_delete');return before?can('inventory_edit'):can('inventory_add');}
+  if(k==='customers')return before?can('customer_edit'):can('repair_create');
   if(k!=='repairs')return can('settings_manage');
-  if(event.deleted)return can('ticket_delete');
-  if(can('history_edit'))return true;
-  if(!before)return can('intake_create');
+  if(event.deleted)return can('repair_delete');
+  if(!before)return can('repair_create');
   const omit=(v,keys)=>Object.fromEntries(Object.entries(v||{}).filter(([key])=>!keys.includes(key)));
   const same=keys=>JSON.stringify(omit(before,keys))===JSON.stringify(omit(event.data,keys));
-  return can('ticket_pay')&&same(['isPaid'])||can('ticket_edit')&&same(['queueStatus','priority','readyBy','readyByLabel','isDelivered','deliveredAt','deliveredDay','statusChangedAt']);
+  if(same(['isPaid','payments','paymentStatus']))return can('payment_record');
+  if(same(['fixedBy']))return can('technician_assign');
+  if(same(['queueStatus','priority','readyBy','readyByLabel','isDelivered','deliveredAt','deliveredDay','statusChangedAt']))return can('repair_status');
+  return can('repair_edit');
  }
- function canSend(event){if(locked)return false;if(event.kind==='repairs')return ['intake_create','history_edit','ticket_edit','ticket_pay','ticket_delete'].some(p=>can(p));return canMirror(event);}
+ function canSend(event){if(locked)return false;if(event.kind==='repairs')return ['repair_create','repair_edit','repair_status','technician_assign','payment_record','repair_delete'].some(p=>can(p));return canMirror(event);}
  function assert(permission){if(locked||!can(permission))throw new Error("You don't have permission for this.");}
- function mayManage(actor,target){return !!actor&&['developer','owner','manager'].includes(actor.role)&&can('team_manage',actor)&&target.role!=='developer'&&target.email!==actor.email&&(actor.role!=='manager'||target.role==='employee');}
+ function mayManage(actor,target){return !!actor&&['developer','owner'].includes(actor.role)&&can('team_manage',actor)&&target.role!=='developer'&&target.email!==actor.email;}
  async function hash(value,recovery=false){const bytes=new TextEncoder().encode((recovery?'phonefix-recovery-v1:':'phonefix-pin-v1:')+value);return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');}
  function code(){let n;do{n=crypto.getRandomValues(new Uint32Array(1))[0];}while(n>=4294000000);return String(n%1000000).padStart(6,'0');}
  function rpc(name,payload){return context.request('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(payload)});}
@@ -65,6 +74,6 @@
   if($('pfUserName'))$('pfUserName').textContent=state.name||state.email;if($('pfUserRole'))$('pfUserRole').textContent=role();
   b.onclick=()=>{const d=$('pfDialog');d.innerHTML='<h2>My account</h2><p>'+esc(state.name||state.email)+'</p><div class="pf-form-line"><button class="pf-btn" id="pfChangeOwnPin">Change my PIN</button><button class="pf-btn" id="pfLockDevice">Lock device</button><button class="pf-btn" id="pfSwitchUser">Switch user</button><button class="pf-btn" id="pfProfileClose">Close</button></div>';d.showModal();$('pfProfileClose').onclick=()=>d.close();$('pfSwitchUser').onclick=()=>root.PhoneFixAuth.logout();$('pfChangeOwnPin').onclick=()=>{d.close();if(preview){alert('PINs are not saved in the sample workspace.');return;}gate('change');};$('pfLockDevice').onclick=()=>{d.close();if(!preview)lock();};};
  }
- root.PhoneFixAccess={ALL,can,canMirror,canSend,assert,mayManage,open,lock,refresh,attachProfile,get member(){return state;},get locked(){return locked;},setPreview(member){state=member;},hash,recoveryCode:code};
+ root.PhoneFixAccess={ALL,GROUPS,LEGACY,can,canMirror,canSend,assert,mayManage,open,lock,refresh,attachProfile,get member(){return state;},get locked(){return locked;},setPreview(member){state=member;},hash,recoveryCode:code};
  if(typeof module!=='undefined')module.exports=root.PhoneFixAccess;
 })(typeof window==='undefined'?globalThis:window);
