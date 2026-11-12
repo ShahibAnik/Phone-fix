@@ -47,7 +47,7 @@ test('inventory advanced filters compose and sort preference stays on the device
 test('limited manager can delegate owned permissions and sees other categories locked',async()=>{const{dom,w}=await boot();try{
  w.PhoneFixAccess.setPreview({role:'manager',email:'limited@example.invalid',permissions:['team_manage','repair_create']});
  assert.equal(w.PhoneFixAccess.can('team_view'),true);
- await w.PhoneFixTeam.render();w.document.querySelector('#pfAddPerson').click();
+ await w.PhoneFixTeam.render();w.PhoneFixPermissions.render();assert.equal(w.document.querySelector('#pfAddPerson').hidden,false);w.document.querySelector('#pfAddPerson').click();
  assert.deepEqual([...w.document.querySelector('#pfPersonRole').options].map(x=>x.value),['employee']);
  assert.equal(w.document.querySelector('[data-permission="repair_create"]').disabled,false);
  assert.equal(w.document.querySelector('[data-permission="inventory_edit"]').disabled,true);
