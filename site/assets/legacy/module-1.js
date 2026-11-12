@@ -1772,10 +1772,10 @@
   $('ndSort').addEventListener('change', renderNotDelivered);
 
   // ---- Technician name suggestions (one datalist shared by both "Fixed by" fields) ----
-  // Seeded names are always offered. Any other name that appears in MORE than
-  // TECH_LEARN_AFTER saved records is learned automatically (case variants merged).
+  // Seeded names are always offered. Other names become suggestions after four
+  // completed saves. Whitespace and case variants are merged.
   const TECH_SEED_NAMES = ['Anik', 'Kazi', 'Sojib', 'Ontor'];
-  const TECH_LEARN_AFTER = 6;
+  const TECH_LEARN_AFTER = 4;
   function refreshTechSuggestions(){
     const list = $('techNameList');
     if (!list) return;
@@ -1786,7 +1786,7 @@
     getRecords().forEach(r => {
       const raw = (r && typeof r.fixedBy === 'string') ? r.fixedBy.trim() : '';
       if (!raw || raw === '\u2014') return; // skip blanks and the "—" placeholder
-      const key = raw.toLowerCase();
+      const key = raw.replace(/\s+/g, ' ').toLowerCase();
       let t = tally.get(key);
       if (!t){ t = { count: 0, forms: new Map() }; tally.set(key, t); }
       t.count++;
@@ -1795,7 +1795,7 @@
 
     const learned = [];
     tally.forEach((t, key) => {
-      if (t.count <= TECH_LEARN_AFTER || names.has(key)) return;
+      if (t.count < TECH_LEARN_AFTER || names.has(key)) return;
       let best = '', bestN = 0; // display with the most common spelling
       t.forms.forEach((n, form) => { if (n > bestN){ best = form; bestN = n; } });
       learned.push({ key, name: best, count: t.count });
@@ -1829,6 +1829,38 @@
   refreshTechSuggestions();
   // also refresh when a field gets focus, so names learned since page load show up
   ['fixedBy', 'hmFixedBy'].forEach(id => { const el = $(id); if (el) el.addEventListener('focus', refreshTechSuggestions); });
+
+  // Custom device models are learned after their first saved repair. The
+  // predefined datalist values remain intact and are never replaced.
+  function refreshModelSuggestions(){
+    const list = $('deviceDataList');
+    if (!list) return;
+    const names = new Map();
+    list.querySelectorAll('option').forEach(o => {
+      const value = String(o.value || '').trim().replace(/\s+/g, ' ');
+      if (value) names.set(value.toLowerCase(), value);
+    });
+    const tally = new Map();
+    getRecords().forEach(r => {
+      const value = String(r?.device || '').trim().replace(/\s+/g, ' ');
+      if (!value) return;
+      const key = value.toLowerCase(), current = tally.get(key) || {count:0, forms:new Map()};
+      current.count++;
+      current.forms.set(value, (current.forms.get(value) || 0) + 1);
+      tally.set(key, current);
+    });
+    [...tally.entries()].sort((a,b)=>b[1].count-a[1].count).forEach(([key,item]) => {
+      if (names.has(key)) return;
+      let best='', count=-1;
+      item.forms.forEach((n,form)=>{if(n>count){best=form;count=n;}});
+      names.set(key,best);
+    });
+    list.innerHTML='';
+    names.forEach(value=>{const option=document.createElement('option');option.value=value;list.append(option);});
+  }
+  refreshModelSuggestions();
+  $('deviceModel')?.addEventListener('focus', refreshModelSuggestions);
+  window.addEventListener('pf:data', ()=>{refreshTechSuggestions();refreshModelSuggestions();});
 
   // ============ QUEUE BOARD ============
   // Record fields (all optional): queueSerial (n), queueDay (YYYYMMDD), queueStatus (queued|progress|ready),

@@ -1002,6 +1002,22 @@
       <input type="search" id="invSearch" class="inv-in inv-search" placeholder="Search IMEI or product name&hellip;" autocomplete="off">
       <div class="inv-chipbar" id="invChips"></div>
     </div>
+    <div class="inv-advanced" id="invAdvanced">
+      <select id="invDealerFilter" class="inv-in" aria-label="Filter by dealer"><option value="">All dealers</option></select>
+      <select id="invCategoryFilter" class="inv-in" aria-label="Filter by category"><option value="">All categories</option><option>Available</option><option>On layaway</option><option>Sold</option></select>
+      <label>From <input id="invDateFrom" type="date" class="inv-in"></label>
+      <label>To <input id="invDateTo" type="date" class="inv-in"></label>
+      <select id="invStockFilter" class="inv-in" aria-label="Filter by stock"><option value="">All stock</option><option value="low">Low stock</option><option value="out">Out of stock</option></select>
+      <select id="invSort" class="inv-in" aria-label="Sort inventory">
+        <option value="date-desc">Newest added</option><option value="date-asc">Oldest added</option>
+        <option value="updated-desc">Recently updated</option><option value="dealer-asc">Dealer A–Z</option>
+        <option value="product-asc">Product A–Z</option><option value="category-asc">Category A–Z</option>
+        <option value="qty-asc">Quantity low–high</option><option value="qty-desc">Quantity high–low</option>
+        <option value="cost-asc" data-cost-sort>Cost low–high</option><option value="cost-desc" data-cost-sort>Cost high–low</option>
+        <option value="sell-desc">Selling price high–low</option><option value="value-desc" data-cost-sort>Total value high–low</option>
+      </select>
+      <button type="button" class="inv-btn ghost" id="invResetFilters">Reset</button>
+    </div>
     <div class="inv-list" id="invList"></div>
     </div><!-- /invPhonesView -->
     <div id="invPartsView" hidden>
@@ -1153,5 +1169,5 @@
 
 
 
-<script src="/assets/access.js?v=20261110a"></script><script src="/assets/permissions.js?v=20261110a"></script><script src="/assets/team.js?v=20261110a"></script><script src="/assets/identity.js?v=20261110a"></script><script src="/assets/sync.js?v=20261110a"></script><script src="/assets/manager.js?v=20261110a"></script><script src="/assets/operations-core.js?v=20261110a"></script><script src="/assets/operations.js?v=20261110a"></script><script src="/assets/commerce.js?v=20261110b"></script><script src="/assets/workspace.js?v=20261110a"></script><script src="/assets/auth.js?v=20261110a"></script></body>
+<script src="/assets/access.js?v=20261112a"></script><script src="/assets/permissions.js?v=20261112a"></script><script src="/assets/team.js?v=20261112a"></script><script src="/assets/identity.js?v=20261112a"></script><script src="/assets/sync.js?v=20261112a"></script><script src="/assets/manager.js?v=20261112a"></script><script src="/assets/operations-core.js?v=20261112a"></script><script src="/assets/operations.js?v=20261112a"></script><script src="/assets/commerce.js?v=20261112a"></script><script src="/assets/customization.js?v=20261112a"></script><script src="/assets/workspace.js?v=20261112a"></script><script src="/assets/auth.js?v=20261112a"></script></body>
 </html>

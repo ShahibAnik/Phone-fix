@@ -13,6 +13,7 @@
 
   var items = [];
   var filter = 'all', query = '', openImei = null, chartMode = 'profit', armedDelete = null, armedTimer = null;
+  var advanced = { dealer:'', category:'', from:'', to:'', stock:'', sort:localStorage.getItem('pf.inventory.sort') || 'date-desc' };
 
   // ---------- helpers ----------
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -75,7 +76,8 @@
       soldPrice: numOrBlank(o.soldPrice), soldDate: isoDate(o.soldDate), custName: str(o.custName), custPhone: str(o.custPhone),
       layCustomer: str(o.layCustomer || o.resName), layPhone: str(o.layPhone || o.resPhone),
       layAgreed: numOrBlank(o.layAgreed == null || o.layAgreed === '' ? o.agreePrice : o.layAgreed),
-      layPayments: normLayPayments(o), layStatus: str(o.layStatus) || (normStatus(o.status) === 'On layaway' ? 'Active' : '')
+      layPayments: normLayPayments(o), layStatus: str(o.layStatus) || (normStatus(o.status) === 'On layaway' ? 'Active' : ''),
+      updatedAt: str(o.updatedAt || o.updated_at)
     };
   }
 
@@ -194,11 +196,33 @@
       if (filter === 'layaway' && it.status !== 'On layaway') return false;
       if (filter === 'sold' && it.status !== 'Sold') return false;
       if (filter === 'dead' && !isDead(it)) return false;
+      if (advanced.dealer && it.dealer !== advanced.dealer) return false;
+      if (advanced.category && it.status !== advanced.category) return false;
+      if (advanced.from && it.date < advanced.from) return false;
+      if (advanced.to && it.date > advanced.to) return false;
+      if (advanced.stock === 'low' && !(it.qty > 0 && it.qty <= 1)) return false;
+      if (advanced.stock === 'out' && it.qty > 0) return false;
       if (q && it.imei.toLowerCase().indexOf(q) < 0 && it.name.toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    list.sort(function(a, b){
-      return filter === 'dead' ? (a.date < b.date ? -1 : 1) : (a.date < b.date ? 1 : (a.date > b.date ? -1 : 0));
+    function cmpText(a,b){ return String(a||'').localeCompare(String(b||''),undefined,{numeric:true,sensitivity:'base'}); }
+    function sell(it){ return Number(it.soldPrice || it.layAgreed || 0); }
+    function value(it){ return Number(it.price||0) * Number(it.qty||0); }
+    list.sort(function(a,b){
+      switch(advanced.sort){
+        case 'date-asc': return cmpText(a.date,b.date);
+        case 'updated-desc': return cmpText(b.updatedAt||b.date,a.updatedAt||a.date);
+        case 'dealer-asc': return cmpText(a.dealer,b.dealer)||cmpText(a.name,b.name);
+        case 'product-asc': return cmpText(a.name,b.name);
+        case 'category-asc': return cmpText(a.status,b.status)||cmpText(a.name,b.name);
+        case 'qty-asc': return a.qty-b.qty;
+        case 'qty-desc': return b.qty-a.qty;
+        case 'cost-asc': return a.price-b.price;
+        case 'cost-desc': return b.price-a.price;
+        case 'sell-desc': return sell(b)-sell(a);
+        case 'value-desc': return value(b)-value(a);
+        default: return filter === 'dead' ? cmpText(a.date,b.date) : cmpText(b.date,a.date);
+      }
     });
     return list;
   }
@@ -208,6 +232,8 @@
     function opts(o){ return Object.keys(o).sort().map(function(k){ return '<option value="' + esc(k) + '">'; }).join(''); }
     $('invNameList').innerHTML = opts(names);
     $('invDealerList').innerHTML = opts(dealers);
+    var dealerFilter = $('invDealerFilter');
+    if (dealerFilter) dealerFilter.innerHTML = '<option value="">All dealers</option>' + Object.keys(dealers).sort().map(function(k){return '<option value="'+esc(k)+'">'+esc(k)+'</option>';}).join('');
   }
 
   // ---------- render ----------
@@ -600,6 +626,14 @@
   $('invExport').addEventListener('click', exportCsv);
   $('invLayaway').addEventListener('click', openLayFinder);
   $('invSearch').addEventListener('input', function(){ query = this.value; renderList(); });
+  [['invDealerFilter','dealer'],['invCategoryFilter','category'],['invDateFrom','from'],['invDateTo','to'],['invStockFilter','stock']].forEach(function(pair){
+    var el=$(pair[0]);if(el)el.addEventListener('change',function(){advanced[pair[1]]=this.value;renderList();});
+  });
+  if($('invSort')){$('invSort').value=advanced.sort;$('invSort').addEventListener('change',function(){advanced.sort=this.value;localStorage.setItem('pf.inventory.sort',this.value);renderList();});}
+  if($('invResetFilters'))$('invResetFilters').addEventListener('click',function(){
+    advanced={dealer:'',category:'',from:'',to:'',stock:'',sort:'date-desc'};query='';filter='all';localStorage.setItem('pf.inventory.sort',advanced.sort);
+    $('invSearch').value='';['invDealerFilter','invCategoryFilter','invDateFrom','invDateTo','invStockFilter'].forEach(function(id){if($(id))$(id).value='';});$('invSort').value=advanced.sort;render();
+  });
   $('invChips').addEventListener('click', function(e){ var b = e.target.closest('[data-filter]'); if (b) { filter = b.dataset.filter; render(); } });
   $('invChartTabs').addEventListener('click', function(e){ var b = e.target.closest('[data-mode]'); if (b) { chartMode = b.dataset.mode; renderChart(); } });
   $('invDeadBanner').addEventListener('click', function(){ filter = 'dead'; render(); $('invChips').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
