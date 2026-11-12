@@ -3,21 +3,28 @@
 const $=id=>document.getElementById(id),C=window.PhoneFixOperationsCore;
 let ctx,ui,rows=[],members=[],page='',loading=0,loaded=false;
 const state={from:C.date().slice(0,7)+'-01',to:C.date(),month:C.date().slice(0,7),user:'',query:''};
-const manager=()=>['developer','owner','manager'].includes(PhoneFixAccess.member?.role);
-const noteAccess=()=>['intake_create','ticket_edit','history_edit'].some(p=>PhoneFixAccess.can(p));
+const salesEdit=()=>PhoneFixAccess.can('daily_closing_submit')||PhoneFixAccess.can('daily_closing_edit');
+const salesView=()=>salesEdit()||PhoneFixAccess.can('financial_reports_view');
+const staffView=()=>PhoneFixAccess.can('attendance_view')||PhoneFixAccess.can('attendance_edit');
+const staffEdit=()=>PhoneFixAccess.can('attendance_edit');
+const manager=()=>staffView()||salesEdit();
+const noteAccess=()=>PhoneFixAccess.can('customer_history_view')||PhoneFixAccess.can('customer_edit')||PhoneFixAccess.can('repair_create');
+const noteManage=()=>PhoneFixAccess.can('customer_edit');
 const esc=v=>ui.esc(v),money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((n||0)/100);
 const metric=(label,value)=>`<div class="pf-op-metric"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;
 const employee=id=>members.find(m=>m.user_id===id)?.name||members.find(m=>m.user_id===id)?.email||(id===ctx.user.id?'You':id);
 const sync=r=>ctx.preview?'Sample · no live sync':r.synced_version>=r.version?'Synced to both':r.sync_error?'Needs attention: '+r.sync_error:'Saved to Supabase · Sheet pending';
-function assertManage(){if(PhoneFixAccess.locked||!manager())throw Error('Manager access is required.');}
+function assertManage(){if(PhoneFixAccess.locked||!manager())throw Error('Your account does not have permission for this action.');}
 async function rpc(name,payload){return ctx.request('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(payload)});}
 async function load(){
  if(ctx.preview){loaded=true;return;}
  const result=await rpc('pf_operations_list',{});rows=result.records;members=result.members;loaded=true;
 }
-function visible(){return rows.filter(r=>!r.archived&&(r.kind==='note'?noteAccess():manager()||r.kind!=='sale'&&r.user_id===ctx.user.id));}
+function visible(){return rows.filter(r=>!r.archived&&(r.kind==='note'?noteAccess():r.kind==='sale'?salesView():staffView()||r.user_id===ctx.user.id&&PhoneFixAccess.can('attendance_own')));}
 async function save(kind,day,user,data,existing,employees){
- if(kind!=='note')assertManage();else if(PhoneFixAccess.locked||!noteAccess())throw Error('Customer access is required.');
+ if(kind==='sale'){if(PhoneFixAccess.locked||!(existing?PhoneFixAccess.can('daily_closing_edit'):PhoneFixAccess.can('daily_closing_submit')))throw Error('Daily closing permission is required.');}
+ else if(['attendance','rate','adjustment','payment'].includes(kind)){if(PhoneFixAccess.locked||!(staffEdit()||kind==='attendance'&&user===ctx.user.id&&PhoneFixAccess.can('attendance_own')))throw Error('Attendance or payroll edit permission is required.');}
+ else if(kind==='note'&&(PhoneFixAccess.locked||!noteAccess()))throw Error('Customer access is required.');
  const payload={id:existing?.id||$('opForm')?.dataset.recordId||crypto.randomUUID(),kind,day,user_id:user||null,data,expected_version:existing?.version||0};
  if(employees?.length&&day>C.date())throw Error("Attendance cannot be recorded for a future date.");
  let saved;
