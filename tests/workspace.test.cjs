@@ -58,3 +58,54 @@ test('limited manager can delegate owned permissions and sees other categories l
  assert.equal(w.document.querySelector('#pfDialog').open,false);
  assert.match(w.document.querySelector('#pfTeamView').textContent,/Delegation fixture/);
 }finally{dom.window.close();}});
+
+for (const [role,permissions] of [['developer',null],['owner',null],['manager',['repair_create']],['employee',['repair_create']],['manager',['intake_create']],['employee',['intake_create']]]) {
+ test(`Save & Print works for ${role} with ${permissions||'full role access'}`,async()=>{
+  const {dom,w}=await boot();try{
+   w.PhoneFixAccess.setPreview({role,email:'print-fixture@example.invalid',permissions});
+   w.history.replaceState({},'', '/#intake');
+   const calls=[],alerts=[];let prints=0,seq=12000;
+   w.alert=m=>alerts.push(m);w.print=()=>{prints++;assert.match(w.document.querySelector('#printArea')?.textContent||w.document.body.textContent,/Print fixture/);};
+   w.PhoneFixAuth.request=async path=>{calls.push(path);if(path.endsWith('pf_reserve_ticket_id'))return {id:`FIX-20261113-${++seq}`,stamp:'20261113',seq};if(path.endsWith('pf_reserve_customer_id'))return {id:'CUST-12000',seq:12000};throw new Error('Unexpected request '+path);};
+   w.document.querySelector('#resetBtn').click();await tick();
+   for(const[id,v]of Object.entries({custName:'Print fixture',custPhone:'2155550199',deviceModel:'Test Phone',repairPrice:'75',fixedBy:'Fixture',repairNotes:'New repair'}))w.document.getElementById(id).value=v;
+   const before=JSON.parse(w.localStorage.getItem('phoneRepairIntakes'));
+   const f=w.document.querySelector('#intakeForm');f.dispatchEvent(new w.SubmitEvent('submit',{bubbles:true,cancelable:true,submitter:f.querySelector('button[type=submit]')}));await tick();
+   const after=JSON.parse(w.localStorage.getItem('phoneRepairIntakes'));
+   assert.equal(after.length,before.length+1);assert.equal(prints,1);assert.deepEqual(alerts,[]);
+   assert.ok(calls.some(x=>x.endsWith('pf_reserve_customer_id')));assert.ok(calls.some(x=>x.endsWith('pf_reserve_ticket_id')));
+   assert.deepEqual(after.slice(0,before.length),before);
+   if(permissions){for(const p of ['team_manage','inventory_edit','payment_record','repair_edit','customer_edit'])assert.equal(w.PhoneFixAccess.can(p),false,p);}
+  }finally{dom.window.close();}
+ });
+}
+for(const operation of ['ticket','customer'])test(`${operation} reservation failure names operation and does not save or print`,async()=>{
+ const{dom,w}=await boot();try{
+  w.PhoneFixAccess.setPreview({role:'employee',permissions:['repair_create']});w.history.replaceState({},'','/#intake');
+  const alerts=[];let prints=0;w.alert=m=>alerts.push(m);w.print=()=>prints++;
+  w.PhoneFixAuth.request=async path=>{if(path.endsWith(`pf_reserve_${operation}_id`))throw new Error('Permission denied');return {id:'FIX-20261113-12001',stamp:'20261113',seq:12001};};
+  w.document.querySelector('#resetBtn').click();await tick();
+  for(const[id,v]of Object.entries({custName:'Failed fixture',custPhone:'2155550199',deviceModel:'Test',repairPrice:'75',fixedBy:'Fixture',repairNotes:'Failure fixture'}))w.document.getElementById(id).value=v;
+  const before=w.localStorage.getItem('phoneRepairIntakes');const f=w.document.querySelector('#intakeForm');f.dispatchEvent(new w.SubmitEvent('submit',{bubbles:true,cancelable:true,submitter:f.querySelector('button[type=submit]')}));await tick();
+  assert.equal(w.localStorage.getItem('phoneRepairIntakes'),before);assert.equal(prints,0);assert.match(alerts.join(' '),new RegExp(operation+' ID reservation failed','i'));
+ }finally{dom.window.close();}
+});
+test('printer failure reports saved ticket and resets form without creating a duplicate',async()=>{
+ const{dom,w}=await boot();try{
+  w.PhoneFixAccess.setPreview({role:'employee',permissions:['repair_create']});const alerts=[];w.alert=m=>alerts.push(m);w.print=()=>{throw new Error('Printer unavailable');};
+  for(const[id,v]of Object.entries({custName:'Printer fixture',custPhone:'2155550199',deviceModel:'Test',repairPrice:'75',fixedBy:'Fixture',repairNotes:'Printer test'}))w.document.getElementById(id).value=v;
+  const before=JSON.parse(w.localStorage.getItem('phoneRepairIntakes')).length;const f=w.document.querySelector('#intakeForm');f.dispatchEvent(new w.SubmitEvent('submit',{bubbles:true,cancelable:true,submitter:f.querySelector('button[type=submit]')}));await tick();
+  assert.equal(JSON.parse(w.localStorage.getItem('phoneRepairIntakes')).length,before+1);assert.match(alerts.join(' '),/Receipt printing failed: the ticket was saved/);assert.equal(w.document.querySelector('#custName').value,'');
+ }finally{dom.window.close();}
+});
+test('public check-in inbox imports once, sends to Sheet, preserves existing tickets and acknowledges',async()=>{
+ const{dom,w}=await boot();try{
+  const before=JSON.parse(w.localStorage.getItem('phoneRepairIntakes'));const existing=before[0];
+  w.PhoneFixAccess.setPreview({role:'employee',permissions:['repair_create']});w.history.replaceState({},'','/#intake');
+  const ack=[];const record={...existing,id:'FIX-20261113-88888',name:'Public inbox fixture',selfIntake:true};
+  w.PhoneFixAuth.request=async(path,opts)=>{if(path.endsWith('pf_public_checkin_pending'))return [{requestId:'new',record},{requestId:'existing',record:{...existing,name:'Must not overwrite'}}];if(path.endsWith('pf_public_checkin_ack')){ack.push(JSON.parse(opts.body).request_id);return null;}return [];};
+  w.dispatchEvent(new w.Event('online'));await tick();await tick();
+  const after=JSON.parse(w.localStorage.getItem('phoneRepairIntakes'));assert.equal(after.length,before.length+1);assert.deepEqual(after.find(x=>x.id===existing.id),existing);assert.deepEqual(ack,['new','existing']);
+  w.dispatchEvent(new w.Event('online'));await tick();await tick();assert.equal(JSON.parse(w.localStorage.getItem('phoneRepairIntakes')).length,after.length);
+ }finally{dom.window.close();}
+});
