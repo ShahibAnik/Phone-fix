@@ -63,13 +63,17 @@
   async function reserveStoreTicketId(){
     if (new URLSearchParams(location.search).get('preview') === '1') return nextTicketId();
     var stamp = todayStamp();
-    var result = await PhoneFixAuth.request('/rest/v1/rpc/pf_reserve_ticket_id', { method:'POST', body:JSON.stringify({ minimum_value:observedTicketMaximum(stamp) }) });
+    var result;
+    try { PhoneFixAccess.assert('repair_create'); result = await PhoneFixAuth.request('/rest/v1/rpc/pf_reserve_ticket_id', { method:'POST', body:JSON.stringify({ minimum_value:observedTicketMaximum(stamp) }) }); }
+    catch(err) { throw new Error('Ticket ID reservation failed: ' + (err.message || 'Please check your connection and repair creation access.')); }
     if (!result || !result.id) throw new Error('Could not reserve a store-wide Ticket ID. Check the connection and try again.');
     return result;
   }
   async function reserveStoreCustomerId(){
     if (new URLSearchParams(location.search).get('preview') === '1') return generateNextCustomerId();
-    var result = await PhoneFixAuth.request('/rest/v1/rpc/pf_reserve_customer_id', { method:'POST', body:JSON.stringify({ minimum_value:observedCustomerMaximum() }) });
+    var result;
+    try { PhoneFixAccess.assert('repair_create'); result = await PhoneFixAuth.request('/rest/v1/rpc/pf_reserve_customer_id', { method:'POST', body:JSON.stringify({ minimum_value:observedCustomerMaximum() }) }); }
+    catch(err) { throw new Error('Customer ID reservation failed: ' + (err.message || 'Please check your connection and repair creation access.')); }
     if (!result || !result.id) throw new Error('Could not reserve a store-wide Customer ID. Check the connection and try again.');
     return result.id;
   }
@@ -130,11 +134,30 @@
     var body = repairBody(rec, deleted);
     var dm = rdDirty(); dm[rec.id] = { t: Date.now(), del: !!deleted }; wrDirty(dm);
     var t0 = Date.now(), rid = rec.id;
-    try { fetch(GOOGLE_SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) })
-      .then(function(){ var m = rdDirty(); if (m[rid] && m[rid].t <= t0) { delete m[rid]; wrDirty(m); } })
-      .catch(function(){}); } catch(e){}
     if (!deleted) pushWarranty(rec.id, rec.warrantyDays, false);
+    try { return fetch(GOOGLE_SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) })
+      .then(function(){ var m = rdDirty(); if (m[rid] && m[rid].t <= t0) { delete m[rid]; wrDirty(m); } return true; })
+      .catch(function(){return false;}); } catch(e){return Promise.resolve(false);}
   }
+
+  // Durable public check-ins are imported by an authorized staff session.
+  // The stable ID and local dirty queue make retries safe; never replace an existing ticket.
+  let publicCheckinBusy=false;
+  async function syncPublicCheckins(){
+    if(publicCheckinBusy || new URLSearchParams(location.search).get('preview')==='1' || !PhoneFixAccess.can('repair_create') || PhoneFixAccess.locked)return;
+    publicCheckinBusy=true;
+    try{
+      const pending=await PhoneFixAuth.request('/rest/v1/rpc/pf_public_checkin_pending',{method:'POST',body:'{}'});
+      for(const item of pending){
+        const rows=getRecords();let record=rows.find(r=>r.id===item.record.id);
+        if(!record){record=item.record;rows.push(record);if(!saveRecords(rows))break;}
+        if(await pushRepair(record))await PhoneFixAuth.request('/rest/v1/rpc/pf_public_checkin_ack',{method:'POST',body:JSON.stringify({request_id:item.requestId})});
+      }
+      if(pending.length){renderHistory($('searchHistory').value);renderQueue();window.dispatchEvent(new Event('pf:data'));}
+    }catch(err){console.warn('Public check-in sync pending:',err.message);}
+    finally{publicCheckinBusy=false;}
+  }
+  setTimeout(syncPublicCheckins,2000);setInterval(syncPublicCheckins,30000);window.addEventListener('online',syncPublicCheckins);
 
   /* ---- repeat-issue detection: same phone + same model in within the last 30 days ---- */
   function normModel_(s){ return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
@@ -548,7 +571,8 @@
       updatePreview();
       return ticket;
     }).catch(function(err){
-      $('nextIdBadge').textContent = 'Connection required';
+      ticketReservation = null;
+      $('nextIdBadge').textContent = err.message || 'Ticket ID reservation failed';
       throw err;
     });
     ticketReservation.catch(function(){});
@@ -1281,18 +1305,21 @@
   });
 
   form.addEventListener('submit', async (e) => {
-    if(!PhoneFixAccess.can('intake_create')){e.preventDefault();return;}
+    if(!PhoneFixAccess.can('repair_create')){e.preventDefault();alert('Ticket creation denied: repair creation permission is required.');return;}
     e.preventDefault();
     if(!form.reportValidity()) return;
     const submitButton = e.submitter;
     if (submitButton) submitButton.disabled = true;
+    let intakeOperation = 'Ticket ID reservation';
     try {
     if(!currentTicket) await (ticketReservation || reserveNewTicket());
 
     const now = new Date();
     const formattedNow = `${niceDate(now)} ${niceTime(now)}`;
+    intakeOperation = 'Customer ID reservation';
     const custId = activeCustomerProfile ? activeCustomerProfile.customerId : await reserveStoreCustomerId();
 
+    intakeOperation = 'Customer profile save';
     const profiles = getProfiles();
     if(!profiles[custId]){
       profiles[custId] = {
@@ -1358,9 +1385,10 @@
       warrantyDays: intakeWarranty
     };
 
+    intakeOperation = 'Ticket save';
     const records = getRecords();
     records.push(record);
-    saveRecords(records);
+    if (!saveRecords(records)) throw new Error('Local storage could not save the ticket. Receipt was not printed.');
     commitTicketCounter(currentTicket.stamp, currentTicket.seq);
     commitQueueCounter(record.queueDay, record.queueSerial);
     pushRepair(record);
@@ -1372,8 +1400,9 @@
 
     flashSaved();
     renderHistory($('searchHistory').value);
+    intakeOperation = 'Receipt printing (ticket already saved)';
     populatePrintLabel(record);
-    window.print();
+    try { window.print(); } catch(err) { alert('Receipt printing failed: the ticket was saved. Reprint its receipt instead of saving another ticket. ' + (err.message || '')); }
 
     form.reset();
     fields.isPaid.checked = false;
@@ -1387,7 +1416,7 @@
     reserveNewTicket();
     if (typeof closeIntakeModal === 'function') closeIntakeModal();
     } catch (err) {
-      alert(err && err.message ? err.message : 'The intake could not be saved. Please check the connection and try again.');
+      alert(intakeOperation + ' failed: ' + (err && err.message ? err.message : 'Please check the connection and try again.'));
     } finally {
       if (submitButton) submitButton.disabled = false;
     }

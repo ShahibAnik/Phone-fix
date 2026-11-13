@@ -271,6 +271,7 @@ if(new URLSearchParams(location.search).get("preview")==="1"){const sample=docum
   }
   $('againBtn').addEventListener('click', function(){ location.reload(); });
   var forceNew = false;
+  var submissionId = null, submissionInput = null;
   $('dupeAgainBtn').addEventListener('click', function(){
     forceNew = true;
     $('dupeCard').style.display = 'none';
@@ -310,57 +311,28 @@ if(new URLSearchParams(location.search).get("preview")==="1"){const sample=docum
     btn.textContent = 'Checking in…';
 
     function fail(msg){
+      try { localStorage.removeItem('pfSelfIntakeLast'); } catch(err){}
       btn.disabled = false;
       btn.textContent = btnLabel();
       showErr(msg);
     }
 
-    // Google Sheets is still used for duplicate detection and the repair row.
-    // Supabase reserves the Ticket ID atomically across every device and role.
-    function buildAndPost(arr, t, ticketId, offlineNote){
-      var notes = issues.join(', ');
-      if (details) notes = notes ? notes + ' — ' + details : details;
-      var body = {
-        recordType: 'repair',
-        ticketId: ticketId,
-        customerName: name,
-        phone: formatPhone(phoneRaw),
-        deviceModel: device,
-        passcode: code,
-        price: 0,
-        priceFormatted: '$0.00',
-        paymentStatus: 'DUE',
-        fixedBy: '',
-        notes: notes,
-        dateTime: t.dateTime,
-        createdAtMs: t.ms,
-        status: 'Self-intake',
-        statusChangedAt: t.dateTime,
-        customerId: '',
-        subtotal: 0,
-        taxAmount: 0,
-        isTaxable: false,
-        warrantyDays: 7,
-        queueDay: t.stamp,
-        priority: prioOn
-      };
-      fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
-        .then(function(){ showDone(ticketId, device, { priority: prioOn, ahead: lineAhead(arr) }); var when=document.createElement('p');when.className='fineprint';when.textContent='Submitted '+new Date(t.ms).toLocaleString();$('doneCard').appendChild(when); if (offlineNote){ var n=document.createElement('p');n.className='fineprint';n.textContent=offlineNote;$('doneCard').appendChild(n); } })
-        .catch(function(){ fail('Could not send your check-in. Please come to the counter and we\'ll check you in there.'); });
+    // IDs are issued only as part of a durable, validated public submission.
+    function buildAndPost(arr, t, ticketId){
+      showDone(ticketId, device, { priority: prioOn, ahead: lineAhead(arr) });
+      var when=document.createElement('p');when.className='fineprint';when.textContent='Submitted '+new Date(t.ms).toLocaleString();$('doneCard').appendChild(when);
     }
-
     function reserveTicket(arr, t){
-      var maxSeq = 0;
-      arr.forEach(function(o){
-        var m = /^FIX-(\d{8})-(\d+)$/.exec(String((o && o.ticketId) || ''));
-        if (m && m[1] === t.stamp) maxSeq = Math.max(maxSeq, parseInt(m[2], 10));
-      });
-      if (IS_PREVIEW) return Promise.resolve('FIX-' + t.stamp + '-' + pad(maxSeq + 1,4));
-      return fetch(SUPABASE_URL + '/rest/v1/rpc/pf_reserve_ticket_id', {
-        method:'POST', headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-        body:JSON.stringify({minimum_value:maxSeq})
-      }).then(function(r){ return r.json().then(function(data){ if(!r.ok)throw new Error((data&&data.message)||'Ticket service unavailable');return data; }); })
-        .then(function(data){ if(!data||!data.id)throw new Error('Ticket service unavailable');return data.id; });
+      var notes = issues.join(', ');if(details)notes=notes?notes+' — '+details:details;
+      var fields={name:name,phone:phone,device:device,code:code,notes:notes,priority:prioOn};
+      var input=JSON.stringify(fields);
+      if(input!==submissionInput){submissionInput=input;submissionId=crypto.randomUUID();}
+      if(IS_PREVIEW)return Promise.resolve('FIX-'+t.stamp+'-DEMO');
+      return fetch(SUPABASE_URL+'/rest/v1/rpc/pf_public_checkin_submit',{
+        method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({payload:Object.assign({requestId:submissionId},fields)})
+      }).then(function(r){return r.json().then(function(data){if(!r.ok)throw new Error(data.message||'Check-in submission failed');return data;});})
+        .then(function(data){if(!data||!data.id)throw new Error('Check-in confirmation missing');return data.id;});
     }
 
     function handleRepairs(data){
@@ -384,7 +356,7 @@ if(new URLSearchParams(location.search).get("preview")==="1"){const sample=docum
         }
       }
       reserveTicket(arr,t).then(function(ticketId){ buildAndPost(arr,t,ticketId,null); })
-        .catch(function(){ fail('We could not reserve a safe ticket number. Please check your signal or come to the counter. Nothing was overwritten.'); });
+        .catch(function(err){ fail('Check-in submission failed: '+err.message+'. Please retry or visit the counter.'); });
     }
 
     function loadAndSubmit(attempt){
@@ -401,7 +373,7 @@ if(new URLSearchParams(location.search).get("preview")==="1"){const sample=docum
           // Supabase can still issue a collision-proof ID when the Sheet list is unavailable.
           var t = shopNow();
           reserveTicket([],t).then(function(ticketId){ buildAndPost([],t,ticketId,'The repair list was slow, but your Ticket ID was safely reserved. Please show it at the counter.'); })
-            .catch(function(){ fail('We could not reserve a safe ticket number. Please check your signal or come to the counter. Nothing was overwritten.'); });
+            .catch(function(err){ fail('Check-in submission failed: '+err.message+'. Please retry or visit the counter.'); });
         });
     }
     // Fast path: a fresh cached list (under 10 minutes old) skips the download.
