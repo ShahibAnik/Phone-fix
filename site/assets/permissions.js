@@ -27,7 +27,7 @@
   const search=document.getElementById('masterSearchWrap');if(search)search.hidden=!(A().can('customer_history_view')||A().can('inventory_view'));
   const alerts=document.getElementById('pfAlerts');if(alerts)alerts.hidden=!routeAllowed('alerts');
   const profile=document.getElementById('pfProfileMenu');if(profile){const label=(A().member.name||A().member.email||'My account')+' · '+A().member.role;if(profile.textContent!==label)profile.textContent=label;}
-  const addPerson=document.getElementById('pfAddPerson');if(addPerson)addPerson.hidden=!['developer','owner'].includes(A().member?.role);
+  const addPerson=document.getElementById('pfAddPerson');if(addPerson)addPerson.hidden=!['developer','owner','manager'].includes(A().member?.role)||!A().can('team_manage');
   const quickFlag=document.getElementById('opQuickFlag');if(quickFlag)quickFlag.hidden=!(A().can('customer_history_view')||A().can('customer_edit')||A().can('repair_create'));
   document.querySelectorAll('.inv-price').forEach(el=>{if(el.textContent.includes('Bought'))el.classList.add('pf-cost-field');});
   document.querySelectorAll('.inv-chip.profit,.inv-chip.loss,.pt-price,.pt-meta,#intakePartsTotal,#hmPartsTotal').forEach(el=>el.classList.add('pf-cost-field'));

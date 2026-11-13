@@ -12,7 +12,7 @@
  const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let state,context,locked=false,version=0,polling;
  const role=()=>state?.role||'employee';
- function can(permission,member=state){if(!member)return false;if(['developer','owner'].includes(member.role)||(member.role==='manager'&&member.permissions==null)||(member.role==='employee'&&permission==='attendance_own'))return true;const granted=Array.isArray(member.permissions)?member.permissions:[];if(granted.includes(permission))return true;if(LEGACY[permission])return LEGACY[permission].some(p=>granted.includes(p));return Object.entries(LEGACY).some(([old,next])=>next.includes(permission)&&granted.includes(old));}
+ function can(permission,member=state){if(!member)return false;if(['developer','owner'].includes(member.role)||(member.role==='manager'&&member.permissions==null)||(member.role==='employee'&&permission==='attendance_own'))return true;const granted=Array.isArray(member.permissions)?member.permissions:[];if(granted.includes(permission))return true;if(permission==='team_view'&&granted.includes('team_manage'))return true;if(permission==='financial_reports_view'&&granted.includes('costs_view'))return true;if(permission==='orders_manage'&&granted.includes('inventory_manage'))return true;if(LEGACY[permission])return LEGACY[permission].some(p=>granted.includes(p));return Object.entries(LEGACY).some(([old,next])=>next.includes(permission)&&granted.includes(old));}
  function canMirror(event,before){
   if(locked)return false;const k=event.kind;
   if(k==='device_settings')return true;
@@ -31,7 +31,7 @@
  }
  function canSend(event){if(locked)return false;if(event.kind==='repairs')return ['repair_create','repair_edit','repair_status','technician_assign','payment_record','repair_delete'].some(p=>can(p));return canMirror(event);}
  function assert(permission){if(locked||!can(permission))throw new Error("You don't have permission for this.");}
- function mayManage(actor,target){return !!actor&&['developer','owner'].includes(actor.role)&&can('team_manage',actor)&&target.role!=='developer'&&target.email!==actor.email;}
+ function mayManage(actor,target){return !!actor&&(['developer','owner'].includes(actor.role)||(actor.role==='manager'&&target.role==='employee'))&&can('team_manage',actor)&&target.role!=='developer'&&target.email!==actor.email;}
  async function hash(value,recovery=false){const bytes=new TextEncoder().encode((recovery?'phonefix-recovery-v1:':'phonefix-pin-v1:')+value);return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');}
  function code(){let n;do{n=crypto.getRandomValues(new Uint32Array(1))[0];}while(n>=4294000000);return String(n%1000000).padStart(6,'0');}
  function rpc(name,payload){return context.request('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(payload)});}
