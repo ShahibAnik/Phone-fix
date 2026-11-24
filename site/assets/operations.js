@@ -13,7 +13,7 @@ const noteManage=()=>PhoneFixAccess.can('customer_edit');
 const esc=v=>ui.esc(v),money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((n||0)/100);
 const metric=(label,value)=>`<div class="pf-op-metric"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;
 const employee=id=>members.find(m=>m.user_id===id)?.name||members.find(m=>m.user_id===id)?.email||(id===ctx.user.id?'You':id);
-const sync=r=>ctx.preview?'Sample · no live sync':r.synced_version>=r.version?'Synced to both':r.sync_error?'Needs attention: '+r.sync_error:'Saved to Supabase · Sheet pending';
+const sync=r=>ctx.preview?'Sample · no live sync':r.synced_version>=r.version?'Synced':r.sync_error?'Sync needs attention':'Saved · Sync pending';
 function assertManage(){if(PhoneFixAccess.locked||!manager())throw Error('Your account does not have permission for this action.');}
 async function rpc(name,payload){return ctx.request('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(payload)});}
 async function load(){
@@ -31,7 +31,7 @@ async function save(kind,day,user,data,existing,employees){
  if(ctx.preview){const old=rows.find(r=>r.id===payload.id);if((old?.version||0)!==payload.expected_version)throw Error('This record changed. Refresh and try again.');saved={...payload,version:payload.expected_version+1,archived:!!data.archived,updated_at:new Date().toISOString(),created_at:old?.created_at||new Date().toISOString(),created_by:old?.created_by||ctx.user.email,updated_by:ctx.user.email,synced_version:0};rows=rows.filter(r=>r.id!==saved.id);rows.push(saved);}
  else{if(employees){const result=await rpc('pf_daily_sale_save',{payload,employee_ids:employees});saved=result.sale;for(const r of result.attendance){rows=rows.filter(x=>x.id!==r.id);rows.push(r);}}else saved=await rpc('pf_operation_save',{payload});rows=rows.filter(r=>r.id!==saved.id);rows.push(saved);}
  if(ctx.preview&&employees)for(const uid of new Set(employees)){if(!rows.some(r=>r.kind==='attendance'&&r.day===day&&r.user_id===uid&&!r.archived))rows.push({id:crypto.randomUUID(),kind:'attendance',day,user_id:uid,data:{status:'present',description:'Recorded with daily sales',reason:''},version:1,synced_version:0,archived:false});}
- ui.toast(ctx.preview?'Saved in sample workspace.':'Saved to Supabase. Google Sheets sync pending.');return saved;
+ ui.toast(ctx.preview?'Saved in sample workspace.':'Saved. Sync pending.');return saved;
 }
 function modal(title,body){const d=$('pfDialog');d.innerHTML=`<div class="pf-section-head"><h2>${esc(title)}</h2><button type="button" class="pf-btn" id="opClose">Close</button></div>${body}`;$('opClose').onclick=()=>d.close();if(!d.open)d.showModal();return d;}
 function form(title,fields,onSave){const d=modal(title,`<form id="opForm" class="pf-op-form">${fields}<p id="opError" role="alert" class="pf-error"></p><button class="pf-btn primary" type="submit">Save</button></form>`);$('opForm').dataset.recordId=crypto.randomUUID();$('opForm').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('[type=submit]');b.disabled=true;try{await onSave(new FormData(e.target));d.close();await render(page);refreshFlags();}catch(ex){$('opError').textContent=ex.message;}finally{b.disabled=false;}};return d;}

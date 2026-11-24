@@ -132,3 +132,36 @@ for (const phone of [2155550100, null, '(215) 555-0100']) {
   }finally{dom.window.close();}
  });
 }
+
+const PROVIDER_NAMES=/supabase|google\s*sheets?|\bsheets?\b|apps\s*script/i;
+const visibleText=w=>{const clone=w.document.body.cloneNode(true);clone.querySelectorAll('script,style,template').forEach(n=>n.remove());const attrs=[...w.document.querySelectorAll('[title],[aria-label],[placeholder],[alt]')].map(el=>['title','aria-label','placeholder','alt'].map(a=>el.getAttribute(a)||'').join(' '));return clone.textContent+' '+attrs.join(' ');};
+test('no screen names a storage provider; only the sync status is shown',async()=>{const{dom,w,errors}=await boot();try{
+ const routes=[...w.document.querySelectorAll('[data-route]')].map(el=>el.dataset.route);assert.ok(routes.length>5);
+ for(const key of new Set(routes)){w.PhoneFixWorkspace.navigate(key);await tick();await tick();const m=visibleText(w).match(PROVIDER_NAMES);assert.equal(m,null,`Provider name "${m&&m[0]}" visible on ${key}`);}
+ w.document.querySelector('#pfOpenSync').click();const sync=w.document.querySelector('#pfDialog');assert.equal(sync.open,true);assert.equal(sync.querySelectorAll('button.primary').length,1);assert.equal(w.document.querySelector('#pfSyncNow').textContent,'Sync now');assert.doesNotMatch(visibleText(w),PROVIDER_NAMES);sync.close();
+ const intake=new JSDOM(fs.readFileSync(path.join(root,'intake/index.html'),'utf8')).window;assert.doesNotMatch(visibleText(intake),PROVIDER_NAMES);
+ assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
+}finally{dom.window.close();}});
+test('status bar reads Synced · All changes saved, or shows waiting / attention states',async()=>{const{dom,w}=await boot();try{
+ const src=fs.readFileSync(path.join(root,'assets/workspace.js'),'utf8');assert.match(src,/label:'Synced',detail:'All changes saved'/);assert.match(src,/change\$\{state\.pending===1\?'':'s'\} waiting/);assert.match(src,/label:'Needs attention'/);
+ for(const f of ['assets/workspace.js','assets/operations.js','assets/commerce.js','assets/manager.js','assets/team.js','index.html']){const text=fs.readFileSync(path.join(root,f),'utf8').replace(/\/\*[\s\S]*?\*\//g,'').replace(/https?:\/\/[^\s'"`)]+/g,'').replace(/\.supabase\.co/g,'');const literals=text.match(/'[^'\n]*'|`[^`]*`|>[^<>]+</g)||[];const bad=literals.filter(l=>/supabase|google sheets?|\bsheets?\b/i.test(l)&&!/stylesheet|pf\.supabase\./i.test(l));assert.deepEqual(bad,[],f);}
+}finally{dom.window.close();}});
+test('queue cards are compact, open on arrow or tap, stay open across refresh, and mark payment',async()=>{const{dom,w}=await boot('https://phone-fix-site.vercel.app/?preview=1#queue');try{
+ const card=w.document.querySelector('[data-stage=queued] .qv-card'),id=card.dataset.id;assert.ok(card.classList.contains('qv-compact'));
+ const details=card.querySelector('.qv-details');assert.equal(details.hidden,true);assert.ok(card.querySelector('.qv-serial'));assert.ok(card.querySelector('.qv-name').textContent.trim());assert.ok(card.querySelector('.qv-device'));
+ assert.ok(details.querySelector('[data-act=status]')&&details.querySelector('[data-act=priority]')&&details.querySelector('.qv-issue')&&details.querySelector('[data-act=ticket]'));
+ card.querySelector('[data-act=expand]').click();assert.equal(card.querySelector('.qv-details').hidden,false);assert.equal(card.querySelector('[data-act=expand]').getAttribute('aria-expanded'),'true');
+ w.dispatchEvent(new w.Event('pf:data'));w.document.querySelector('#qvSort').dispatchEvent(new w.Event('change'));const again=w.document.querySelector('.qv-card[data-id="'+id+'"]');assert.notEqual(again,card);assert.equal(again.querySelector('.qv-details').hidden,false,'open card stays open after refresh');
+ again.querySelector('.qv-name').click();assert.equal(w.document.querySelector('.qv-card[data-id="'+id+'"] .qv-details').hidden,true,'tapping the card closes it');
+ const read=()=>JSON.parse(w.localStorage.getItem('phoneRepairIntakes')).find(r=>r.id===id);const before=read().isPaid;const box=w.document.querySelector('.qv-card[data-id="'+id+'"] .qv-paid-toggle');box.checked=!before;box.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(read().isPaid,!before);assert.match(w.document.querySelector('.qv-card[data-id="'+id+'"] .qv-paid').textContent,!before?/Paid/:/Due/);
+ w.PhoneFixAccess.setPreview({role:'employee',email:'fixture@example.invalid',permissions:['repair_view']});w.PhoneFixPermissions.render();const locked=w.document.querySelector('.qv-card[data-id="'+id+'"] .qv-paid-toggle');assert.equal(locked.hidden,true);locked.hidden=false;locked.checked=before;locked.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(read().isPaid,!before,'no payment permission: unchanged');
+}finally{dom.window.close();}});
+test('team privacy: developer accounts hidden from non-developers, role limits, activity log masks developer actions',async()=>{const{dom,w}=await boot();try{
+ const A=w.PhoneFixAccess,dev={email:'developer@example.invalid',role:'developer',permissions:null},owner={email:'owner@example.invalid',role:'owner',permissions:null},owner2={email:'owner2@example.invalid',role:'owner'},manager={email:'manager@example.invalid',role:'manager',permissions:null},staff={email:'staff@example.invalid',role:'employee'};
+ for(const t of [owner2,manager,staff])assert.equal(A.mayManage(owner,t),true,'owner manages '+t.role);
+ assert.equal(A.mayManage(manager,staff),true);for(const t of [owner,owner2,{...manager,email:'m2@example.invalid'}])assert.equal(A.mayManage(manager,t),false,'manager cannot manage '+t.role);
+ for(const t of [owner,manager,staff])assert.equal(A.mayManage(dev,t),true,'developer manages '+t.role);for(const actor of [dev,owner,manager])assert.equal(A.mayManage(actor,{...dev,email:'other-dev@example.invalid'}),false,'nobody edits a developer');
+ await w.PhoneFixTeam.render();assert.match(w.document.querySelector('#pfTeamView').textContent,/developer@example\.invalid/,'developer sees developer rows');
+ for(const role of ['owner','manager']){A.setPreview({email:role+'@example.invalid',role,permissions:null});await w.PhoneFixTeam.render();const text=w.document.querySelector('#pfTeamView').textContent;assert.doesNotMatch(text,/developer/i,role+' sees no developer row or wording');}
+ A.setPreview(owner);const rows=await w.PhoneFixManager.markSystemActors([{actor_email:'Developer@example.invalid'},{actor_email:'owner@example.invalid'},{actor_email:null}]);assert.deepEqual(rows.map(w.PhoneFixManager.actorLabel),['System administrator','owner@example.invalid','System']);
+}finally{dom.window.close();}});

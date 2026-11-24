@@ -157,7 +157,7 @@
   };
   window.PhoneFixUsageBridge = {
     stage: function(entry){ return fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(usageBody(entry))}); },
-    read: function(){ return fetch(ENDPOINT+'?action=usage&_='+Date.now()).then(function(r){if(!r.ok)throw new Error('PartUsage Sheet verification failed');return r.json();}); }
+    read: function(){ return fetch(ENDPOINT+'?action=usage&_='+Date.now()).then(function(r){if(!r.ok)throw new Error('Could not confirm the saved parts usage. Try again.');return r.json();}); }
   };
   function flushUsageOutbox(){
     var outbox = readJSON(USAGE_OUTBOX_KEY, []);
