@@ -6,7 +6,7 @@
  repair_create:'#intakeForm, #pfNewRepair, #pfHomeIntake, #qvNewIntakeBtn, #intakeFabBtn',
  repair_edit:'.editBtn, .rateBtn, #historyForm, #addHistoryBtn, #hmWarrantyBtn, #hmWarrantyApply, #hmPartAddBtn, #hmPartAddGo, [data-edit-record]',
  repair_delete:'.delBtn, .delete-btn, [data-remove-record]',
- payment_record:'.paid-toggle',
+ payment_record:'.paid-toggle, .qv-paid-toggle',
  repair_status:'.deliver-toggle, #rvApprove, #rvNoPrio, #qvCarryAll, #queueView [data-act="priority"], #queueView [data-act="status"], #queueView [data-act="back"], #queueView [data-act="carry"], #queueView [data-act="confirm"], #queueView [data-act="review"]',
  data_export:'#exportCsvBtn, #pfSalesExport, #pfShiftExport, #invExport',
  inventory_add:'#invAdd, #ptAdd, #acAdd, #scAddSO, #scAddCred',

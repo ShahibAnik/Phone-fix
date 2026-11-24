@@ -2096,44 +2096,63 @@
     const left = Math.ceil(ms / 60000);
     return '<span class="qv-chip' + (left <= 15 ? ' warn' : '') + '">\u23f1 ' + fmtMins(left) + ' left</span>';
   }
+  // Compact queue cards: summary row (serial, name, model, Paid tick); the arrow or a tap reveals the full ticket.
+  // Open state lives here so periodic board refreshes keep the same cards open.
+  const openQueueCards = new Set();
+  function toggleQueueCard(card){
+    const id = card.dataset.id;
+    const open = !openQueueCards.has(id);
+    if (open) openQueueCards.add(id); else openQueueCards.delete(id);
+    card.classList.toggle('is-open', open);
+    const details = card.querySelector('.qv-details');
+    if (details) details.hidden = !open;
+    const arrow = card.querySelector('[data-act="expand"]');
+    if (arrow){ arrow.setAttribute('aria-expanded', String(open)); arrow.setAttribute('aria-label', (open ? 'Hide' : 'Show') + ' ticket details'); }
+  }
+  function paidTickHtml(r){
+    const paid = !!r.isPaid, id = escapeHtml(r.id);
+    return `<label class="qv-paid" title="Payment status"><input type="checkbox" class="qv-paid-toggle" data-id="${id}" aria-label="Paid" ${paid ? 'checked' : ''}><span class="badge ${paid ? 'badge-paid' : 'badge-due'}">${paid ? 'Paid' : 'Due'}</span></label>`;
+  }
   function cardHtml(r, onToday, now){
     const st = r.isDelivered ? 'delivered' : normQueueStatus(r);
     const pri = qPriority(r);
     const id = escapeHtml(r.id);
+    const open = openQueueCards.has(r.id);
     const next = st === 'queued' ? ['Start repair', ''] : (st === 'progress' ? ['Mark ready', 'go-ready'] : ['Delivered \u2713', 'go-deliver']);
     const price = r.totalFormatted || r.priceFormatted || '';
     const name = escapeHtml(r.name || '\u2014');
-    const nameHtml = r.customerId
-      ? `<button type="button" class="qv-name link" data-act="dossier" title="Open customer profile">${name}</button>`
-      : `<div class="qv-name">${name}</div>`;
     const rep = findRepeat(r.phone, r.device, r.createdAt || now, r.id);
     const badges = (pri ? '<span class="qv-badge prio">PRIORITY</span>' : '')
       + (rep ? `<span class="qv-badge repeat" title="Same model in on ${escapeHtml(rep.dateDisplay || '')} — ${escapeHtml(rep.id)}">↻ REPEAT</span>` : '')
       + (isStamp(r.carriedFrom) ? `<span class="qv-badge leftover">\u21a9 Leftover ${escapeHtml(stampShort(r.carriedFrom))}</span>` : '');
-    return `<article draggable="${PhoneFixAccess.can('ticket_edit')}" class="qv-card st-${st}${pri ? ' is-priority' : ''}" data-id="${id}">
+    return `<article draggable="${PhoneFixAccess.can('ticket_edit')}" class="qv-card qv-compact st-${st}${pri ? ' is-priority' : ''}${open ? ' is-open' : ''}" data-id="${id}">
       <div class="qv-top">
         <div class="qv-serial${hasSerial(r) ? '' : ' none'}" title="${hasSerial(r) ? 'Queue number' : 'No queue number'}">${hasSerial(r) ? '#' + pad(Number(r.queueSerial), 3) : '#&ndash;'}</div>
         <div class="qv-main">
-          ${nameHtml}
+          <div class="qv-name">${name}</div>
           <div class="qv-device">${escapeHtml(r.device || '\u2014')}</div>
+          ${paidTickHtml(r)}
         </div>
-        <span class="qv-pill">${Q_LABEL[st]}</span>
+        <button type="button" class="qv-expand" data-act="expand" aria-expanded="${open}" aria-label="${open ? 'Hide' : 'Show'} ticket details">&#8250;</button>
       </div>
-      ${badges ? `<div class="qv-badges">${badges}</div>` : ''}
-      <div class="qv-contact"><span class="mono">${escapeHtml(r.phone || '\u2014')}</span>${price ? `<span class="qv-price">${escapeHtml(price)}</span>` : ''}</div>
-      <div class="qv-issue${r.notes ? '' : ' empty'}">${r.notes ? escapeHtml(r.notes) : 'No issue noted'}</div>
-      <div class="qv-meta">
-        ${r.isDelivered ? '<span class="qv-chip ok">Delivered · '+escapeHtml(r.deliveredAt||'')+'</span>' : countdownChip(r, now)}
-        <span>Tech: <b>${escapeHtml(r.fixedBy || 'Unassigned')}</b></span>
-        ${r.readyByLabel ? `<span>Ready by <b>${escapeHtml(r.readyByLabel)}</b></span>` : ''}
-        <span class="mono"><button type="button" class="xlink mono" data-act="ticket" title="Open ticket">${id}</button></span>
-      </div>
-      ${window.PhoneFixOperations?.flagMarkup(r)||''}
-      <div class="qv-actions">
-        ${!r.isDelivered ? `<button type="button" class="qv-btn ${next[1]}" data-act="status">${next[0]}</button>` : ''}
-        ${st !== 'queued' ? '<button type="button" class="qv-iconbtn" data-act="back" title="Step back one status" aria-label="Step back one status">&#8630;</button>' : ''}
-        <button type="button" class="qv-prio-btn${pri ? ' on' : ''}" data-act="priority" aria-pressed="${pri}">${pri ? '&#9733; PRIORITY' : '&#9734; Priority'}</button>
-        ${onToday || r.isDelivered ? '' : '<button type="button" class="qv-carry-btn" data-act="carry">&rarr; Carry to today</button>'}
+      <div class="qv-details"${open ? '' : ' hidden'}>
+        <div class="qv-badges"><span class="qv-pill">${Q_LABEL[st]}</span>${badges}</div>
+        <div class="qv-contact"><span class="mono">${escapeHtml(r.phone || '\u2014')}</span>${price ? `<span class="qv-price">${escapeHtml(price)}</span>` : ''}</div>
+        <div class="qv-issue${r.notes ? '' : ' empty'}">${r.notes ? escapeHtml(r.notes) : 'No issue noted'}</div>
+        <div class="qv-meta">
+          ${r.isDelivered ? '<span class="qv-chip ok">Delivered · '+escapeHtml(r.deliveredAt||'')+'</span>' : countdownChip(r, now)}
+          <span>Tech: <b>${escapeHtml(r.fixedBy || 'Unassigned')}</b></span>
+          ${r.readyByLabel ? `<span>Ready by <b>${escapeHtml(r.readyByLabel)}</b></span>` : ''}
+          <span class="mono"><button type="button" class="xlink mono" data-act="ticket" title="Open ticket">${id}</button></span>
+          ${r.customerId ? '<button type="button" class="xlink" data-act="dossier" title="Open customer profile">Customer profile</button>' : ''}
+        </div>
+        ${window.PhoneFixOperations?.flagMarkup(r)||''}
+        <div class="qv-actions">
+          ${!r.isDelivered ? `<button type="button" class="qv-btn ${next[1]}" data-act="status">${next[0]}</button>` : ''}
+          ${st !== 'queued' ? '<button type="button" class="qv-iconbtn" data-act="back" title="Step back one status" aria-label="Step back one status">&#8630;</button>' : ''}
+          <button type="button" class="qv-prio-btn${pri ? ' on' : ''}" data-act="priority" aria-pressed="${pri}">${pri ? '&#9733; PRIORITY' : '&#9734; Priority'}</button>
+          ${onToday || r.isDelivered ? '' : '<button type="button" class="qv-carry-btn" data-act="carry">&rarr; Carry to today</button>'}
+        </div>
       </div>
     </article>`;
   }
@@ -2451,7 +2470,12 @@
 
   $('queueView').addEventListener('click', (e) => {
     const t = e.target.closest('button');
-    if (!t) return;
+    if (!t) {
+      // Tapping a compact card (outside its controls) opens or closes the full ticket.
+      const tapped = e.target.closest('#qvGrid .qv-card');
+      if (tapped && !e.target.closest('input, label, a, select, textarea, .qv-details')) toggleQueueCard(tapped);
+      return;
+    }
     if (t.id === 'qvPrev') { boardDay = shiftStamp(viewDay(), -1); renderQueue(); return; }
     if (t.id === 'qvNext') { const n = shiftStamp(viewDay(), 1); boardDay = n >= todayStamp() ? null : n; renderQueue(); return; }
     if (t.id === 'qvToday') { boardDay = null; renderQueue(); return; }
@@ -2459,6 +2483,7 @@
     if (t.id === 'qvCarryAll') { carryToToday(boardRecords(viewDay()).map(r => r.id)); return; }
     const card = t.closest('.qv-card');
     if (!card || !t.dataset.act) return;
+    if (t.dataset.act === 'expand') { toggleQueueCard(card); return; }
     const id = card.dataset.id;
     const rec = getRecords().find(r => isRec(r) && r.id === id);
     if (!rec) { renderQueue(); return; }
@@ -2477,6 +2502,13 @@
       case 'dossier': openDossierFor(id); break;
       case 'ticket': openHistoryModal('edit', id); break;
     }
+  });
+  // Paid/Due tick on queue cards: same save and permission as the Repair history tick.
+  $('qvGrid').addEventListener('change', (e) => {
+    const box = e.target.closest('.qv-paid-toggle');
+    if (!box) return;
+    togglePaid(box.dataset.id, box.checked);
+    renderQueue();
   });
   let draggedTicket=null;
   $('qvGrid').addEventListener('dragstart',e=>{const card=e.target.closest('.qv-card');if(!card||!PhoneFixAccess.can('ticket_edit')){e.preventDefault();return;}draggedTicket=card.dataset.id;e.dataTransfer?.setData('text/plain',draggedTicket);});
@@ -2784,6 +2816,6 @@ window.PhoneFixManager.register('repairs', function(id,value,remove){
 window.PhoneFixManager.register('customers',function(id,value,remove){const profiles=getProfiles();if(remove)delete profiles[id];else profiles[id]=value;saveProfiles(profiles);renderHistory($('searchHistory').value);});
 window.PhoneFixRepairBridge={
  stage:function(rec,deleted){return fetch(GOOGLE_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(repairBody(rec,!!deleted))});},
- read:function(){return fetch(GOOGLE_SHEET_URL+'?action=repairs&_='+Date.now()).then(function(r){if(!r.ok)throw new Error('Repairs Sheet verification failed');return r.json();});}
+ read:function(){return fetch(GOOGLE_SHEET_URL+'?action=repairs&_='+Date.now()).then(function(r){if(!r.ok)throw new Error('Could not confirm the saved repairs. Try again.');return r.json();});}
 };
 })();

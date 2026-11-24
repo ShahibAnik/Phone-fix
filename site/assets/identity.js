@@ -28,7 +28,7 @@
  }
  async function rename(kind,id,before,value,ctx){
   PhoneFixAccess.assert('history_edit');
-  if(!['developer','owner'].includes(PhoneFixAccess.member?.role))throw new Error('Only an Owner or Developer can change Ticket IDs or Customer IDs.');
+  if(!['developer','owner'].includes(PhoneFixAccess.member?.role))throw new Error('Only an Owner can change Ticket IDs or Customer IDs.');
   const snapshot={repairs:JSON.parse(localStorage.getItem(key)||'[]'),customers:JSON.parse(localStorage.getItem(profilesKey)||'{}'),usage:JSON.parse(localStorage.getItem(usageKey)||'[]')};
   const next=plan(kind,id,before,value,snapshot,PhoneFixAccess.member.name||PhoneFixAccess.member.email);
   const ticketChange=kind==='repairs'&&value.id!==id,oldCustomer=kind==='customers'?id:before.customerId,newCustomer=value.customerId,customerChange=oldCustomer!==newCustomer;
