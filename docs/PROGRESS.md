@@ -2,6 +2,19 @@
 
 Newest first. Each entry says what changed, where it stands, and how it was checked.
 
+## 2026-11-24 — Lean activity log, skip unchanged sync writes (D021)
+
+Branch `fix/lean-audit-and-mirror`. Site change goes live only after a Vercel preview is approved.
+
+- **Database (applied):** `lean-audit-log.sql`. `pf_audit` went from ~69 MB to 32 kB; the database dropped from 101 MB to ~31 MB.
+- **Database (pending approval):** `mirror-skip-unchanged.sql` stops identical records from being rewritten.
+- **Site:** Activity log and Record history hide the empty "Change details" box. `manager.js` version bumped to `20261124b`.
+
+Checks:
+- Node tests: apps-script 4/4, commerce 5/5, operations-sheet 2/2, operations 4/4, public-checkin 1/1, save-print-database 1/1, sync 7/7, workspace 40/41 (the known deliverable test).
+- Mirror change checked in PGlite: five sync calls (insert, two identical re-sends, a change, a delete) produced three writes.
+- Live database after the audit change: 0 audit rows, 5 triggers on the new function, retention job scheduled.
+
 ## 2026-11-24 — Queue cards, sync wording, team privacy (D020)
 
 Branch `feature/queue-sync-team-privacy`. Goes live only after a Vercel preview is approved.

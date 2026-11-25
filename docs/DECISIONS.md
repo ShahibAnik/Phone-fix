@@ -30,3 +30,25 @@ Earlier decisions (D001–D019) were recorded in handoff notes outside this repo
 
 ### Rollback
 Promote the previous production deployment in Vercel. No data migration is involved.
+
+## D021 — Lean activity log and skip unchanged sync writes
+
+**Date:** 2026-11-24
+**Status:** Accepted (audit change applied; mirror change pending approval)
+
+### Why
+`pf_audit` reached ~69 MB of the 101 MB database in one month (34,341 rows). Each row stored full before/after copies of the record, ~70% of repair updates changed only `client_version`, and every ticket-counter bump was logged.
+
+### Activity log (`database/lean-audit-log.sql`, applied 2026-11-24)
+- The log records who, what, which record and when. It no longer stores before/after copies.
+- Saves that change only `updated_at`, `client_version` or `modified_by` are not logged. Counter increments are not logged.
+- Removals and access revocations still show as `remove` and `revoke_access`.
+- A daily job (04:15 UTC) deletes entries older than 60 days.
+- Earlier history was cleared when this was applied.
+- The Activity log and Record history hide "Change details" for entries with no stored values.
+
+### Sync writes (`database/mirror-skip-unchanged.sql`, not yet applied)
+- `pf_mirror` skips an event when the record's data and deleted flag are already identical, so devices re-sending pulled records no longer rewrite rows.
+
+### Rollback
+Re-apply the previous `audit_change` from `database/` history and `permission-aware-mirror.sql`. Cleared history cannot be restored.
